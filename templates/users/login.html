@@ -1,0 +1,20 @@
+{% extends "../base.html" %}
+{% load static %}
+{% load tailwind_filters %}
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body" style="background-color: #FFFFFF;">
+            <h2 class="card-title mb-5" style="font-size: 32px;">Вход</h2>
+            <form method="post">
+              {% csrf_token %}
+              {{ form|crispy }}
+                <p class="mb-5">Если у вас нет аккаунта, то <a href="{% url "users:signUp" %}" class="link link-primary">зарегистрируйтесь</a>.</p>
+              <button class="butt-all">Вход</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

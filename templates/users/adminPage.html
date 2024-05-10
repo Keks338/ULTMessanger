@@ -1,0 +1,119 @@
+{% extends "../base.html" %}
+{% load static %}
+{% block title %}Панель администратора{% endblock %}
+{% block content %}
+<div class="container mx-auto">
+    {% if user.is_superuser %}
+    <div class="card" style="background-color: #cfcfcf;">
+        <div class="card-body" style = "gap: 0;">
+            <h2 class="default-title mb-5" style="color: #383838;">Админ панель</h2>
+            <div role="tablist" class="tabs tabs-boxed">
+                <a role="tab" class="tab tab-active" data-index="0">Товары</a>
+                <a role="tab" class="tab" data-index="1">Подкатегории</a>
+                <a role="tab" class="tab" data-index="2">Категории</a>
+                <a role="tab" class="tab" data-index="3">Рекламы</a>
+            </div>
+            <div class="containera 1ab" style="background-color: #c9c9c9; display: block;">
+                <div class="grid grid-cols-4 groups">
+                    <h4>Название</h4>
+                    <h4>Краткое описание</h4>
+                    <h4>Цена</h4>
+                    <h4>Действие</h4>
+                </div>
+                {% for Pr in products %}
+                    <div class="grid grid-cols-4 groups-low" style="width: 100%;">
+                        <div class="col-span-1">{{Pr.name|truncatewords:3}}</div>
+                        <div class="col-span-1">{{Pr.description|truncatewords:6}}</div>
+                        <div class="col-span-1">{{Pr.price}} тенге</div>
+                        <div class="container col-span-1">
+                            <a href="#" class="btn btn-primary mb-2">Редактировать</a>
+                            <a href="#" class="btn btn-error mb-2">Удалить</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="containera 2ab" style="background-color: #c9c9c9; display: none;">
+                <div class="grid grid-cols-3 groups" style="background-color: #e6e6e6; padding-bottom: 10px;">
+                    <h4>Название</h4>
+                    <h4>Категория</h4>
+                    <h4>Действие</h4>
+                </div>
+                {% for Cat in categories %}
+                    <div class="grid grid-cols-3 groups-low" style="width: 100%;">
+                        <div class="col-span-1">{{Cat.name}}</div>
+                        <div class="col-span-1">{{Cat.undercategory}}</div>
+                        <div class="container col-span-1">
+                            <a href="#" class="btn btn-primary mb-2">Редактировать</a>
+                            <a href="#" class="btn btn-error mb-2">Удалить</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="containera 3ab" style="background-color: #c9c9c9; display: none;">
+                <div class="grid grid-cols-2 groups" style="background-color: #e6e6e6; padding-bottom: 10px;">
+                    <h4>Название</h4>
+                    <h4>Действие</h4>
+                </div>
+                {% for un in subcats %}
+                    <div class="grid grid-cols-2 groups-low" style="width: 100%;">
+                        <div class="col-span-1">{{un.undercategory}}</div>
+                        <div class="container col-span-1">
+                            <a href="#" class="btn btn-primary mb-2">Редактировать</a>
+                            <a href="#" class="btn btn-error mb-2">Удалить</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="containera 4ab" style="background-color: #c9c9c9; display: none;">
+                <div class="grid grid-cols-3 groups" style="background-color: #e6e6e6; padding-bottom: 10px;">
+                    <h4>Название</h4>
+                    <h4>Краткое описание</h4>
+                    <h4>Действие</h4>
+                </div>
+                {% for ad in adverts %}
+                    <div class="grid grid-cols-3 groups-low" style="width: 100%;">
+                        <div class="col-span-1">{{ad.name}}</div>
+                        <div class="col-span-1">{{ad.description}}</div>
+                        <div class="container col-span-1">
+                            <a href="#" class="btn btn-primary mb-2">Редактировать</a>
+                            <a href="#" class="btn btn-error mb-2">Удалить</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-error shadow-lg">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Для того чтобы увидеть панель администратора, у вас должны быть права администратора.</span>
+        </div>
+      </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var tabs = document.querySelectorAll('.tabs-boxed .tab');
+        var containers = document.querySelectorAll('.containera');
+
+        tabs.forEach(function(tab, index) {
+            tab.addEventListener('click', function() {
+                tabs.forEach(function(t) {
+                    t.classList.remove('tab-active');
+                });
+                this.classList.add('tab-active');
+
+                containers.forEach(function(containera, containerIndex) {
+                    if (containerIndex === index) {
+                        containera.style.display = 'block';
+                    } else {
+                        containera.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

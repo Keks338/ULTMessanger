@@ -1,0 +1,28 @@
+{% extends "../base.html" %}
+{% load static %}
+{% load tailwind_filters %}
+{% block title %}Профиль пользователя{% endblock %}
+{% block content %}
+<div class="container mx-auto">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body" style="background-color: #FFFFFF;">
+            <h2 class="card-title mb-5" style="font-size: 32px;">Профиль {{ profile.username }}</h2>
+            <a style="position: absolute; left: 68%; top: 85%;" href="{% url 'users:profileEdit' user_id=user.id %}" class="butt-all">Редактировать профиль</a>
+            <div style="position: absolute; left: 70%; top: 5%;"><center><h3 style="font-weight: 600;">Фото профиля:</h3><img src="{{ user.image.url }}" width = "200px" id = "photo"></center></div>
+            <b style="font-weight: 800;">Имя: </b>
+            <p style="color:black;">{{ profile.first_name }}</p>
+            <b style="font-weight: 800; margin-top: 15px;">Фамилия: </b>
+            <p style="color:black;">{{ profile.last_name }}</p>
+            <b style="font-weight: 800; margin-top: 15px;">Пароль: </b>
+            <p style="color:#474747;">Скрыто</p>
+            <b style="font-weight: 800; margin-top: 15px;">Email: </b>
+            <p style="color:#000000;">{{ profile.email }}</p>
+            <b style="font-weight: 800; margin-top: 15px;">Дата рождения: </b>
+            <p style="color:#000000;">{{ profile.birthdate }}</p>
+            <b style="font-weight: 800; margin-top: 15px;">Коротко о себе: </b>
+            <p style="color:#000000;">{{ profile.short_Desc }}</p>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}

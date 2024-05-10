@@ -1,0 +1,22 @@
+{% extends "../base.html" %}
+{% load static %}
+{% load tailwind_filters %}
+{% block title %}Редактировать профиль{% endblock %}
+{% block content %}
+<style>
+    
+</style>
+<div class="container mx-auto">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body" style="background-color: #FFFFFF;">
+            <h2 class="card-title mb-5" style="font-size: 32px;">Редактировать профиль</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button class="butt-all"><input type="submit" value="Save"></button>
+            </form>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}

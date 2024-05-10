@@ -1,0 +1,65 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.pop-up-card {
+    position: fixed;
+    left: 28%;
+    top: 17%;
+    background-color: aliceblue;
+    width: 45vw;
+    height: 66vh;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.pop-up-card.hide {
+    animation: fadeOut 0.5s ease-in-out;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.pop-up-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 6;
+}
+
+.static-div {
+    height: 46%;
+    overflow: auto;
+    border: 1px solid #ccc;
+    margin: 35px 10px;
+}
+
+.scrollable-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.scrollable-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.scrollable-list li:last-child {
+    border-bottom: none;
+}
+

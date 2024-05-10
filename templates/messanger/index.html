@@ -1,0 +1,120 @@
+{% extends "../base.html" %}
+{% load static %}
+{% block title %}Главная страница{% endblock %}
+{% block content %}
+
+<!-- Цвет для шапки: rgb(0, 111, 115), для заполнения заднего фона самой страницы (оттенок может меняться): rgb(254, 243, 215) -->
+
+<div class="container">
+    <div style="width: 100vw;">
+        <div class="grid grid-cols-3 gap-4" style="border-bottom: 1px solid rgb(120, 120, 120); background-color: rgb(255, 242, 209);">
+            <div style="border-right: 1px solid rgb(120, 120, 120); padding: 10px 5px;">
+                <center>
+                    <h2>
+                        Чаты
+                    </h2>
+                    <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 80%;" id="searchfield" placeholder="Поиск">
+                </center>
+            </div>
+            <div class="col-span-2" style="padding: 10px 5px;">
+                <center>
+                    <h2>
+                        Текущий чат
+                    </h2>
+                </center>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4" style="border-bottom: 1px solid rgb(120, 120, 120); height: 100vh;">
+            <div style="border-right: 1px solid rgb(120, 120, 120); padding: 10px 5px; background-color: rgb(255, 248, 230);">
+                <div class="container">
+                    {% for User in Users %}
+                    <div class="grid grid-cols-4 gap-4" style="border: none; border-radius: 16px; background-color: rgb(233, 227, 208); margin-bottom: 10px;">
+                        <div>
+                            <label tabindex="0" class="btn btn-ghost btn-circle avatar" style="left: 30%; height: 10vh; width: 5vw; ">
+                                {% if User.image.url == "/media/%20" %}
+                                    <div class="w-16 rounded-full">
+                                        <img src="{% static './images/logo.png' %}" width="16px" alt="Logo">
+                                    </div>
+                                {% else %}
+                                    <div class="w-16 rounded-full">
+                                        <img src="{{ User.image.url }}" width="16px" alt="Logo">
+                                    </div>
+                                {% endif %}
+                            </label>
+                        </div>
+                        <div class="col-span-3">
+                            <h1 style="margin-bottom: 15px;">{{ User.username }}</h1>
+                            <p style="color: rgb(64, 64, 64);" >{{ User.short_Desc | truncatechars:30 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-span-2">
+                <center>
+                    <h2>
+                        Текущий чат
+                    </h2>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pop-up-background" style="display: block;">
+    <div class="pop-up-card">
+        <a class="btn btn-ghost close-add-chat"><i class="fa-solid fa-xmark fa-2x"></i></a>
+        <h2 style="display: inline-block; position: relative; left: 35%;">Мои друзья</h2>
+        <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 97%; margin: 1px 10px; margin-top: 20px;" id="searchfield-friend" placeholder="Поиск">
+        <div class="static-div">
+            <ul class="scrollable-list">
+                {% for User in Users %}
+                    <li>
+                        <div class="grid grid-cols-6">
+                            <center>
+                                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                                    {% if User.image.url == "/media/%20" %}
+                                        <div class="w-12 rounded-full">
+                                            <img src="{% static './images/logo.png' %}" width="16px" alt="Logo">
+                                        </div>
+                                    {% else %}
+                                        <div class="w-12 rounded-full">
+                                            <img src="{{ User.image.url }}" width="16px" alt="Logo">
+                                        </div>
+                                    {% endif %}
+                                </label>
+                            </center>
+                            {{ User.username }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="grid grid-cols-4 gap-4" style="margin: 1px 10px;">
+            <a></a>
+            <a></a>
+            <a class="btn btn-primary" href="#">Не в друзьях</a>
+            <a class="btn btn-primary" href="#">Мои друзья</a>
+        </div>        
+    </div>
+</div>
+
+
+{% endblock %}
+
+<!-- Код JS для поиска по нажатью ENTER:
+
+const ENTER_KEY_CODE = 13;
+document.querySelector('#textEl').addEventListener('keyup', function(e) {
+  if (e.keyCode === ENTER_KEY_CODE) {
+    var city = $(this).val();
+    var url = `http://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&APPID=bb037310921af67f24ba53f2bad48b1d`;
+    if (city !== '') {
+      console.log(`Make ajax call to ${url}`);
+      //Make your AJAX call here
+    } else {
+      console.log('City cannot be blank!');
+    }
+  }
+});
+
+-->
