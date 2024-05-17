@@ -3,24 +3,18 @@
 {% block title %}Главная страница{% endblock %}
 {% block content %}
 
-<!-- Цвет для шапки: rgb(0, 111, 115), для заполнения заднего фона самой страницы (оттенок может меняться): rgb(254, 243, 215) -->
-
 <div class="container">
     <div style="width: 100vw;">
         <div class="grid grid-cols-3 gap-4" style="border-bottom: 1px solid rgb(120, 120, 120); background-color: rgb(255, 242, 209);">
             <div style="border-right: 1px solid rgb(120, 120, 120); padding: 10px 5px;">
                 <center>
-                    <h2>
-                        Чаты
-                    </h2>
+                    <h2>Чаты</h2>
                     <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 80%;" id="searchfield" placeholder="Поиск">
                 </center>
             </div>
             <div class="col-span-2" style="padding: 10px 5px;">
                 <center>
-                    <h2>
-                        Текущий чат
-                    </h2>
+                    <h2>Текущий чат</h2>
                 </center>
             </div>
         </div>
@@ -44,7 +38,7 @@
                         </div>
                         <div class="col-span-3">
                             <h1 style="margin-bottom: 15px;">{{ User.username }}</h1>
-                            <p style="color: rgb(64, 64, 64);" >{{ User.short_Desc | truncatechars:30 }}</p>
+                            <p style="color: rgb(64, 64, 64);">{{ User.short_Desc | truncatechars:30 }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -52,9 +46,7 @@
             </div>
             <div class="col-span-2">
                 <center>
-                    <h2>
-                        Текущий чат
-                    </h2>
+                    <h2>Текущий чат</h2>
                 </center>
             </div>
         </div>
@@ -68,7 +60,7 @@
         <div class="static-div">
             <ul class="scrollable-list">
                 {% for User in Users %}
-                    <li>
+                    <li class="{% if user.id == User.id %}favorites{% elif User.id in user.friend_list_id %}in-friend-list{% else %}not-in-friend-list{% endif %}">
                         <div class="grid grid-cols-6">
                             <center>
                                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
@@ -83,7 +75,22 @@
                                     {% endif %}
                                 </label>
                             </center>
-                            {{ User.username }}
+                            <div>
+                                <h4>{{ User.username | truncatechars:10 }}</h4>
+                                <p style="color: rgb(167, 167, 167);">{{ User.short_Desc | truncatechars:10 }}</p>
+                            </div>
+                            <p></p>
+                            <p></p>
+                            {% if user.id == User.id %}
+                                <p></p>
+                                <a class="btn btn-primary">Открыть чат</a>
+                            {% elif User.id in user.friend_list_id %}
+                                <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                <a class="btn btn-error remove-friend" data-user-id="{{ User.id }}">Удалить из друзей</a>
+                            {% else %}
+                                <p></p>
+                                <a class="btn btn-success add-friend" data-user-id="{{ User.id }}">Добавить в друзья</a>
+                            {% endif %}
                         </div>
                     </li>
                 {% endfor %}
@@ -91,30 +98,8 @@
         </div>
         <div class="grid grid-cols-4 gap-4" style="margin: 1px 10px;">
             <a></a>
-            <a></a>
-            <a class="btn btn-primary" href="#">Не в друзьях</a>
-            <a class="btn btn-primary" href="#">Мои друзья</a>
-        </div>        
-    </div>
-</div>
-
-
+            <a class="btn btn-primary" id="all-users">Все пользователи</a>
+            <a class="btn btn-primary" id="non-friend">Не в друзьях</a>
+            <a class="btn btn-primary" id="friend">Мои друзья</a>
+        </div>
 {% endblock %}
-
-<!-- Код JS для поиска по нажатью ENTER:
-
-const ENTER_KEY_CODE = 13;
-document.querySelector('#textEl').addEventListener('keyup', function(e) {
-  if (e.keyCode === ENTER_KEY_CODE) {
-    var city = $(this).val();
-    var url = `http://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&APPID=bb037310921af67f24ba53f2bad48b1d`;
-    if (city !== '') {
-      console.log(`Make ajax call to ${url}`);
-      //Make your AJAX call here
-    } else {
-      console.log('City cannot be blank!');
-    }
-  }
-});
-
--->
