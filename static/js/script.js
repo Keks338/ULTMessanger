@@ -94,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Обработчик события для кнопки "Добавить в друзья"
     document.querySelectorAll('.add-friend').forEach(button => {
         button.addEventListener('click', function() {
             const userId = this.dataset.userId; // Получаем id пользователя из атрибута data-user-id
@@ -102,11 +101,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Обработчик события для кнопки "Удалить из друзей"
     document.querySelectorAll('.remove-friend').forEach(button => {
         button.addEventListener('click', function() {
             const userId = this.dataset.userId; // Получаем id пользователя из атрибута data-user-id
             removeFromFriendList(userId);
+        });
+    });
+
+    document.querySelectorAll('.remove-friend-p').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId; // Получаем id пользователя из атрибута data-user-id
+            removeFromFriendListPersonal(userId);
         });
     });
 
@@ -140,6 +145,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const csrftoken = getCookie('csrftoken');
         // Отправляем AJAX-запрос на сервер
         fetch('/remove-friend/', {
+            method: 'POST',
+            body: JSON.stringify({ userId: userId }),
+            headers: {
+                "Content-type": "application/json;",
+                'X-CSRFToken': csrftoken,
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Обновляем страницу или выполняем другие действия при успешном удалении из друзей
+                location.reload(); // Например, обновляем страницу
+            } else {
+                console.error('Ошибка при удалении из друзей');
+            }
+        })
+        .catch(error => {
+            console.error('Произошла ошибка', error);
+        });
+    }
+    function removeFromFriendListPersonal(userId) {
+        const csrftoken = getCookie('csrftoken');
+        // Отправляем AJAX-запрос на сервер
+        fetch('/remove-friend-p/', {
             method: 'POST',
             body: JSON.stringify({ userId: userId }),
             headers: {

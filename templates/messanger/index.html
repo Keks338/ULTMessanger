@@ -84,6 +84,9 @@
                             {% if user.id == User.id %}
                                 <p></p>
                                 <a class="btn btn-primary">Открыть чат</a>
+                            {% elif user.id in User.friend_list_id %}
+                                <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                <a class="btn btn-error remove-friend-p" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% elif User.id in user.friend_list_id %}
                                 <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
                                 <a class="btn btn-error remove-friend" data-user-id="{{ User.id }}">Удалить из друзей</a>

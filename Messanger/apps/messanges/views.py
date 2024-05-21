@@ -3,16 +3,16 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import CustomUser
 import json
+import random
 
 def homePage(request):
     hide_element = False
-    Users = CustomUser.objects.all()
+    Users = CustomUser.objects.all().order_by("username")
     return render(request, "messanger/index.html", {
         'hide_element': hide_element,
         'Users': Users,
     })
 
-@csrf_exempt
 def remove_friend(request):
     if request.method == 'POST':
         data2 = json.loads(request.body)
@@ -22,6 +22,28 @@ def remove_friend(request):
             if user.friend_list_id and int(data) in user.friend_list_id:
                 user.friend_list_id.remove(int(data))  # Удаляем пользователя из списка друзей
                 user.save()
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Пользователь не найден в списке друзей'})
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Пользователь не найден'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Метод не поддерживается'})
+
+
+def remove_friend_p(request):
+    if request.method == 'POST':
+        data2 = json.loads(request.body)
+        data = data2["userId"]
+        data = int(data)
+        try:
+            user = CustomUser.objects.get(id=request.user.id)
+            for i in CustomUser.objects.all():
+                if data == i.id:
+                    data = i
+            if data.friend_list_id and int(user.id) in data.friend_list_id:
+                data.friend_list_id.remove(int(user.id))  # Удаляем пользователя из списка друзей
+                data.save()
                 return JsonResponse({'status': 'success'})
             else:
                 return JsonResponse({'status': 'error', 'message': 'Пользователь не найден в списке друзей'})

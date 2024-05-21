@@ -7,5 +7,6 @@ app_name = "messanges"
 urlpatterns = [
     path("", views.homePage, name="homePage"),
     path('remove-friend/', views.remove_friend, name='removeFriend'),
+    path('remove-friend-p/', views.remove_friend_p, name='removeFriendP'),
     path('add-friend/', views.add_friend, name='addFriend'),
 ]
