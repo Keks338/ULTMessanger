@@ -34,7 +34,6 @@ def add_friend(request):
     if request.method == 'POST':
         data2 = json.loads(request.body)
         data = data2["userId"]
-        print(data)
         try:
             user = CustomUser.objects.get(id=request.user.id)
             user.friend_list_id.append(int(data))  # Добавляем друга в список
