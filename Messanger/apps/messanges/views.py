@@ -2,15 +2,29 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import CustomUser
+from ..messanges.models import Chat, GroupChat
 import json
 import random
 
 def homePage(request):
+    user = request.user
     hide_element = False
     Users = CustomUser.objects.all().order_by("username")
+    if user.is_authenticated:
+        Chats = Chat.objects.filter(User1=user) | Chat.objects.filter(User2=user)
+    else:
+        Chats = Chat.objects.all()
+    GroupChats = GroupChat.objects.all()
+    chat_exists = Chats.exists()
+
+    print(chat_exists)
+
     return render(request, "messanger/index.html", {
+        'chat_exists': chat_exists,
         'hide_element': hide_element,
         'Users': Users,
+        'Chats': Chats,
+        'GroupChats': GroupChats,
     })
 
 def remove_friend(request):

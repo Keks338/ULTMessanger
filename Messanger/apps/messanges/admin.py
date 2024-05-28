@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MessageText, GroupChat
+from .models import MessageText, GroupChat, Chat
 
 @admin.register(MessageText)
 class MessageTextAdmin(admin.ModelAdmin):
@@ -9,3 +9,7 @@ class MessageTextAdmin(admin.ModelAdmin):
 @admin.register(GroupChat)
 class GroupChatAdmin(admin.ModelAdmin):
     list_display = ('Group_name', 'Group_desc', 'Users_list_id', 'Users_admin_list_id')
+
+@admin.register(Chat)
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ('User1', 'User2', 'Creation_date')

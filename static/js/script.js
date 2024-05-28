@@ -15,11 +15,30 @@ $('.owl-carousel').owlCarousel({
     }
 })
 
+function updateChatBoxHeight() {
+    var aboba = document.getElementsByClassName('chat-box');
+    var newHeight = window.innerHeight - 138.8 + 'px';
+
+    for (var i = 0; i < aboba.length; i++) {
+        aboba[i].style.height = newHeight;
+    }
+}
+
+// Обновить высоту при загрузке страницы
+updateChatBoxHeight();
+
+// Обновить высоту при изменении размера окна
+window.addEventListener('resize', updateChatBoxHeight);
+
+
 document.addEventListener('DOMContentLoaded', function() {
-    const popUpBackground = document.querySelector('.pop-up-background');
+    const popUpBackground = document.querySelector('.pop-up-background-friends');
+    const popUpBackground2 = document.querySelector('.pop-up-background-chats');
     const popUpCard = document.querySelector('.pop-up-card');
-    const closeButton = document.querySelector('.close-add-chat');
+    const closeButton = document.querySelector('.close-add-friend');
+    const closeButton2 = document.querySelector('.close-add-chat');
     const openButton = document.querySelector('.add-chat');
+    const openButton2 = document.querySelector('.button-chat');
 
     closeButton.addEventListener('click', function() {
         popUpCard.classList.add('hide');
@@ -31,6 +50,18 @@ document.addEventListener('DOMContentLoaded', function() {
         popUpCard.classList.remove('hide');
         setTimeout(() => {
             popUpBackground.style.display = 'block';
+        }, 500);
+    });
+    closeButton2.addEventListener('click', function() {
+        popUpCard.classList.add('hide');
+        setTimeout(() => {
+            popUpBackground2.style.display = 'none';
+        }, 500);
+    });
+    openButton2.addEventListener('click', function() {
+        popUpCard.classList.remove('hide');
+        setTimeout(() => {
+            popUpBackground2.style.display = 'block';
         }, 500);
     });
 });

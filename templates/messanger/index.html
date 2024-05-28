@@ -1,9 +1,10 @@
 {% extends "../base.html" %}
 {% load static %}
+{% load tags %}
 {% block title %}Главная страница{% endblock %}
 {% block content %}
 
-<div class="container">
+<div style="padding-top: 64px;">
     <div style="width: 100vw;">
         <div class="grid grid-cols-3 gap-4" style="border-bottom: 1px solid rgb(120, 120, 120); background-color: rgb(255, 242, 209);">
             <div style="border-right: 1px solid rgb(120, 120, 120); padding: 10px 5px;">
@@ -12,16 +13,18 @@
                     <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 80%;" id="searchfield" placeholder="Поиск">
                 </center>
             </div>
-            <div class="col-span-2" style="padding: 10px 5px;">
+            <div class="col-span-2" style="padding: 10px 5px;"> 
                 <center>
                     <h2>Текущий чат</h2>
                 </center>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-4" style="border-bottom: 1px solid rgb(120, 120, 120); height: 100vh;">
+        <div class="grid grid-cols-3 gap-4 chat-box" style="border-bottom: 1px solid rgb(120, 120, 120); height: 100%">
             <div style="border-right: 1px solid rgb(120, 120, 120); padding: 10px 5px; background-color: rgb(255, 248, 230);">
-                <div class="container">
+                <div class="static-div-chat">
+                    <ul class="scrollable-list-chat">
                     {% for User in Users %}
+                    <li>
                     <div class="grid grid-cols-4 gap-4" style="border: none; border-radius: 16px; background-color: rgb(233, 227, 208); margin-bottom: 10px;">
                         <div>
                             <label tabindex="0" class="btn btn-ghost btn-circle avatar" style="left: 30%; height: 10vh; width: 5vw; ">
@@ -41,26 +44,71 @@
                             <p style="color: rgb(64, 64, 64);">{{ User.short_Desc | truncatechars:30 }}</p>
                         </div>
                     </div>
+                    </li>
                     {% endfor %}
+                    <li>
+                        <div class="button-chat">
+                            <center>
+                                <h4>
+                                    ДОБАВИТЬ ЧАТ
+                                </h4>
+                                <i class="fa-solid fa-plus"></i>
+                            </center>
+                        </div>
+                    </li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-span-2">
-                <center>
-                    <h2>Текущий чат</h2>
-                </center>
+            <div class="col-span-2"> <!-- Форма чата -->
+                <div style="width: 100%; height: 100%;">
+                    <div class="message-input-field">
+                        <input style="width: 90%;">
+                    </div>
+                </div>
             </div>
+        </div>
         </div>
     </div>
 </div>
-<div class="pop-up-background" style="display: none;">
-    <div class="pop-up-card">
-        <a class="btn btn-ghost close-add-chat"><i class="fa-solid fa-xmark fa-2x"></i></a>
-        <h2 style="display: inline-block; position: relative; left: 35%;">Мои друзья</h2>
+<div class="pop-up-background-friends" style="display: none;">
+    <div class="pop-up-card"> <!-- Система "Друзей" -->
+        <a class="btn btn-ghost close-add-friend"><i class="fa-solid fa-xmark fa-2x"></i></a>
+        <h2 style="display: inline-block; position: relative; left: 35%;">Друзья</h2>
         <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 97%; margin: 1px 10px; margin-top: 20px;" id="searchfield-friend" placeholder="Поиск">
         <div class="static-div">
             <ul class="scrollable-list">
                 {% for User in Users %}
-                    <li class="{% if user.id == User.id %}favorites{% elif User.id in user.friend_list_id %}in-friend-list{% else %}not-in-friend-list{% endif %}">
+                {% if User.id == user.id %}
+                <li class="favorites">
+                    <div class="grid grid-cols-6">
+                        <center>
+                            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                                <div class="w-12 rounded-full">
+                                    <img src="{% static './images/logo.png' %}" width="16px" alt="Logo">
+                                </div>
+                            </label>
+                        </center>
+                        <div>
+                            <h4>Избранное</h4>
+                            <p style="color: rgb(167, 167, 167);">{{ User.short_Desc | truncatechars:10 }}</p>
+                        </div>
+                        <p></p>
+                        <p></p>
+                        {% if user.id == User.id %}
+                            <p></p>
+                            {% for chat in Chats %}
+                                {% if chat.User1.id == user.id and chat.User2.id == user.id %}
+                                    <a class="btn btn-primary">Открыть чат</a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    </li>
+                {% endif %}
+                {% endfor %}
+                {% for User in Users %}
+                {% if User.id != user.id %}
+                    <li class="{% if User.id in user.friend_list_id %}in-friend-list{% else %}not-in-friend-list{% endif %}">
                         <div class="grid grid-cols-6">
                             <center>
                                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
@@ -81,21 +129,47 @@
                             </div>
                             <p></p>
                             <p></p>
-                            {% if user.id == User.id %}
+                            {% if user.id in User.friend_list_id %}
+                            {% if chat_exists %}
+                            {% for chat in Chats %}
+                                {% if chat.User1.id == user.id %}
+                                    {% if chat.User2.id == User.id %}
+                                    <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                    {% endif %}
+                                {% elif chat.User2.id == user.id %}
+                                    {% if chat.User1.id == User.id %}
+                                    <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% else %}
                                 <p></p>
-                                <a class="btn btn-primary">Открыть чат</a>
-                            {% elif user.id in User.friend_list_id %}
-                                <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                            {% endif %}
                                 <a class="btn btn-error remove-friend-p" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% elif User.id in user.friend_list_id %}
-                                <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
-                                <a class="btn btn-error remove-friend" data-user-id="{{ User.id }}">Удалить из друзей</a>
+                                {% if chat_exists %}
+                                {% for chat in Chats %}
+                                    {% if chat.User1.id == user.id %}
+                                        {% if chat.User2.id == User.id %}
+                                        <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                        {% endif %}
+                                    {% elif chat.User2.id == user.id %}
+                                        {% if chat.User1.id == User.id %}
+                                        <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% else %}
+                                    <p></p>                                                                     
+                                {% endif %}
+                                    <a class="btn btn-error remove-friend" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% else %}
                                 <p></p>
                                 <a class="btn btn-success add-friend" data-user-id="{{ User.id }}">Добавить в друзья</a>
                             {% endif %}
                         </div>
                     </li>
+                {% endif %}
                 {% endfor %}
             </ul>
         </div>
@@ -104,5 +178,24 @@
             <a class="btn btn-primary" id="all-users">Все пользователи</a>
             <a class="btn btn-primary" id="non-friend">Не в друзьях</a>
             <a class="btn btn-primary" id="friend">Мои друзья</a>
+        </div>
+    </div>
+</div>
+    <div class="pop-up-background-chats" style="display: none;">
+        <div class="pop-up-card"> <!-- Модальное окно "Чатов" -->
+            <a class="btn btn-ghost close-add-chat"><i class="fa-solid fa-xmark fa-2x"></i></a>
+            <h2 style="display: inline-block; position: relative; left: 35%;">Чаты</h2>
+            <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 97%; margin: 1px 10px; margin-top: 20px;" id="searchfield-friend" placeholder="Поиск">
+            <div class="static-div">
+                <ul class="scrollable-list">
+                    
+                </ul>
+            </div>
+            <div class="grid grid-cols-4 gap-4" style="margin: 1px 10px;">
+                <a></a>
+                <a class="btn btn-primary" id="all-chats">Все чаты</a>
+                <a class="btn btn-primary" id="non-chat">Не в чатах</a>
+                <a class="btn btn-primary" id="in-chat">Мои чаты</a>
+            </div>
         </div>
 {% endblock %}

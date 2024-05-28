@@ -1,8 +1,13 @@
+* {
+    box-sizing: border-box;
+}
+  
 html, body {
     width: 100%;
     height: 100%;
-    margin: 0;
+    background: #ccc;
     padding: 0;
+    margin: 0;
 }
 .pop-up-card {
     position: fixed;
@@ -28,7 +33,20 @@ html, body {
     to { opacity: 0; }
 }
 
-.pop-up-background {
+.pop-up-background-friends {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 6;
+}
+
+.pop-up-background-chats {
     position: fixed;
     top: 0;
     left: 0;
@@ -63,4 +81,41 @@ html, body {
     border-bottom: none;
 }
 
+.static-div-chat {
+    height: 100%;
+    overflow: auto;
+}
 
+.scrollable-list-chat {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.scrollable-list-chat li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.scrollable-list-chat li:last-child {
+    border-bottom: none;
+}
+
+.button-chat{
+    padding: 10px 0px; 
+    border: none; 
+    border-radius: 16px; 
+    background-color: rgb(233, 227, 208);
+    margin-bottom: 10px;
+    transition: 0.6ms;
+}
+:hover.button-chat{
+    background-color: rgb(198, 193, 175);
+    cursor: pointer;
+    transition: 0.6ms;
+}
+
+.message-input-field{
+    position: relative;
+    top: 93%;
+}
