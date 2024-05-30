@@ -24,6 +24,33 @@
                 <div class="static-div-chat">
                     <ul class="scrollable-list-chat">
                     {% for User in Users %}
+                        {% if user.id == User.id %}
+                            {% for Chat in Chats %}
+                                {% if user.id == Chat.User1.id and user.id == Chat.User2.id %}
+                    <li>
+                    <div class="grid grid-cols-4 gap-4" style="border: none; border-radius: 16px; background-color: rgb(233, 227, 208); margin-bottom: 10px;">
+                        <div>
+                            <label tabindex="0" class="btn btn-ghost btn-circle avatar" style="left: 30%; height: 10vh; width: 5vw; ">
+                                    <div class="w-16 rounded-full">
+                                        <img src="{% static './images/logo.png' %}" width="16px" alt="Logo">
+                                    </div>
+                            </label>
+                        </div>
+                        <div class="col-span-3">
+                            <h1 style="margin-bottom: 15px;">Избранное</h1>
+                            <p style="color: rgb(64, 64, 64);">{{ User.short_Desc | truncatechars:30 }}</p>
+                        </div>
+                    </div>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                    {% for User in Users %}
+                        {% if user.id != User.id %}
+                            {% for Chat in Chats %}
+                                {% if user.id == Chat.User1.id or user.id == Chat.User2.id %}
+                                    {% if User.id == Chat.User1.id or User.id == Chat.User2.id %}
                     <li>
                     <div class="grid grid-cols-4 gap-4" style="border: none; border-radius: 16px; background-color: rgb(233, 227, 208); margin-bottom: 10px;">
                         <div>
@@ -45,14 +72,17 @@
                         </div>
                     </div>
                     </li>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
                     {% endfor %}
                     <li>
                         <div class="button-chat">
                             <center>
                                 <h4>
-                                    ДОБАВИТЬ ЧАТ
+                                    УПРАВЛЕНИЕ ЧАТАМИ
                                 </h4>
-                                <i class="fa-solid fa-plus"></i>
                             </center>
                         </div>
                     </li>
@@ -135,15 +165,19 @@
                                 {% if chat.User1.id == user.id %}
                                     {% if chat.User2.id == User.id %}
                                     <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                    {% else %}
+                                    <p></p>
                                     {% endif %}
                                 {% elif chat.User2.id == user.id %}
                                     {% if chat.User1.id == User.id %}
                                     <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                    {% else %}
+                                    <p></p>
                                     {% endif %}
+                                    {% else %}
+                                    <p></p>
                                 {% endif %}
                             {% endfor %}
-                            {% else %}
-                                <p></p>
                             {% endif %}
                                 <a class="btn btn-error remove-friend-p" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% elif User.id in user.friend_list_id %}
@@ -152,15 +186,19 @@
                                     {% if chat.User1.id == user.id %}
                                         {% if chat.User2.id == User.id %}
                                         <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                        {% else %}
+                                    <p></p>
                                         {% endif %}
                                     {% elif chat.User2.id == user.id %}
                                         {% if chat.User1.id == User.id %}
                                         <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
+                                        {% else %}
+                                    <p></p>
                                         {% endif %}
+                                    {% else %}
+                                        <p></p>
                                     {% endif %}
-                                {% endfor %}
-                                {% else %}
-                                    <p></p>                                                                     
+                                {% endfor %}                                                                    
                                 {% endif %}
                                     <a class="btn btn-error remove-friend" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% else %}
@@ -188,7 +226,81 @@
             <input style="display: block; color: white; padding: 2px 5px; border-radius: 5px; width: 97%; margin: 1px 10px; margin-top: 20px;" id="searchfield-friend" placeholder="Поиск">
             <div class="static-div">
                 <ul class="scrollable-list">
-                    
+                    {% for User in Users %}
+                        {% if User.id == user.id %}
+                        <li class="">
+                            <div class="grid grid-cols-6">
+                                <center>
+                                    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                                            <div class="w-12 rounded-full">
+                                                <img src="{% static './images/logo.png' %}" width="16px" alt="Logo">
+                                            </div>
+                                    </label>
+                                </center>
+                                <div>
+                                    <h4>Избранное</h4>
+                                    <p style="color: rgb(167, 167, 167);">{{ User.short_Desc | truncatechars:10 }}</p>
+                                </div>
+                                <p></p>
+                                <p></p>
+                                {% for Chat in Chats %}
+                                    {% if user.id == Chat.User1.id and user.id == Chat.User2.id %}
+                                        <p></p>
+                                        <a class="btn btn-error delete-chat" data-user-id="{{ user.id }}">УДАЛИТЬ ЧАТ</a>
+                                    {% else %}
+                                        <p></p>
+                                        <a class="btn btn-success add-chat" data-user-id="{{ user.id }}">ДОБАВИТЬ ЧАТ</a>
+                                    {% endif %}
+                                    {% empty %}
+                                        <p></p>
+                                        <a class="btn btn-success add-chat" data-user-id="{{ user.id }}">ДОБАВИТЬ ЧАТ</a>
+                                {% endfor %}
+                            </div>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% for User in Users %}
+                        {% if User.id in user.friend_list_id or user.id in User.friend_list_id %}
+                        <li class="">
+                            <div class="grid grid-cols-6">
+                                <center>
+                                    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                                        {% if User.image.url == "/media/%20" %}
+                                            <div class="w-12 rounded-full">
+                                                <img src="{% static './images/logo.png' %}" width="16px" alt="Logo">
+                                            </div>
+                                        {% else %}
+                                            <div class="w-12 rounded-full">
+                                                <img src="{{ User.image.url }}" width="16px" alt="Logo">
+                                            </div>
+                                        {% endif %}
+                                    </label>
+                                </center>
+                                <div>
+                                    <h4>{{ User.username | truncatechars:10 }}</h4>
+                                    <p style="color: rgb(167, 167, 167);">{{ User.short_Desc | truncatechars:10 }}</p>
+                                </div>
+                                <p></p>
+                                <p></p>
+                                {% for Chat in Chats %}
+                                    {% if user.id == Chat.User1.id or user.id == Chat.User2.id %}
+                                        {% if User.id == Chat.User1.id or User.id == Chat.User2.id %}
+                                        <p></p>
+                                        <a class="btn btn-error delete-chat" data-user-id="{{ User.id }}">УДАЛИТЬ ЧАТ</a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if User.id not in massa or user.id not in massa %}
+                                        <p></p>
+                                        <a class="btn btn-success add-chat" data-user-id="{{ User.id }}">ДОБАВИТЬ ЧАТ</a>
+                                    {% endif %}
+                                    {% empty %}
+                                        <p></p>
+                                        <a class="btn btn-success add-chat" data-user-id="{{ User.id }}">ДОБАВИТЬ ЧАТ</a>
+                                {% endfor %}
+                            </div>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
                 </ul>
             </div>
             <div class="grid grid-cols-4 gap-4" style="margin: 1px 10px;">
