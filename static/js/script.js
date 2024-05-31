@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const frnd = document.getElementById('friend');
     const no_frnd = document.getElementById('non-friend');
     const all_users = document.getElementById('all-users');
+    const chat = document.getElementById('in-chat');
+    const non_chat = document.getElementById('non-chat');
+    const all_chats = document.getElementById('all-chats');
     const listItems = document.querySelectorAll('.scrollable-list li');
 
     frnd.addEventListener('click', function() {
@@ -117,6 +120,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     all_users.addEventListener('click', function() {
+        
+        listItems.forEach(function(item) {
+            item.style.display = 'block';
+        });
+    });
+    chat.addEventListener('click', function() {
+
+        listItems.forEach(function(item) {
+            if (item.classList.contains('chat-added')) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+    non_chat.addEventListener('click', function() {
+        
+        listItems.forEach(function(item) {
+            if (item.classList.contains('chat-not-added')) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+    all_chats.addEventListener('click', function() {
         
         listItems.forEach(function(item) {
             item.style.display = 'block';

@@ -16,8 +16,11 @@ def homePage(request):
         for i in Chats:
             massa.append(i.User1.id)
             massa.append(i.User2.id)
+            if i.User1.id == i.User2.id:
+                massa.append(i.User1)
     else:
         Chats = Chat.objects.all()
+    print(massa)
     GroupChats = GroupChat.objects.all()
     chat_exists = Chats.exists()
 
