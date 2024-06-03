@@ -11,6 +11,7 @@ class GroupChat(models.Model):
     Users_admin_list_id = ArrayField(ArrayField(models.IntegerField()), default=list)
     Group_name = models.CharField(max_length=100)
     Group_desc = models.TextField(max_length=500)
+
 class MessageText(models.Model):
     Chat_id = models.ForeignKey(Chat, null=True, blank=True, on_delete=models.CASCADE)
     Group_chat_id = models.ForeignKey(GroupChat, null=True, blank=True, on_delete=models.CASCADE)

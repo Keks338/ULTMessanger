@@ -11,4 +11,6 @@ urlpatterns = [
     path('add-friend/', views.add_friend, name='addFriend'),
     path('add-chat/', views.add_chat, name='addChat'),
     path('remove-chat/', views.remove_chat, name='removeChat'),
+    path('get_messages/<int:chat_id>/', views.get_messages, name='get_messages'),
+    path('send_message/', views.send_message, name='send_message'),
 ]

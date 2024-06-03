@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import CustomUser
-from ..messanges.models import Chat, GroupChat
+from ..messanges.models import Chat, GroupChat, MessageText
 import json
 import random
 
@@ -20,7 +20,6 @@ def homePage(request):
                 massa.append(i.User1)
     else:
         Chats = Chat.objects.all()
-    print(massa)
     GroupChats = GroupChat.objects.all()
     chat_exists = Chats.exists()
 
@@ -121,3 +120,25 @@ def remove_chat(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Метод не поддерживается'})
 
+def get_messages(request, chat_id):
+    if request.method == 'GET':
+        messages = MessageText.objects.filter(Chat_id=chat_id).order_by('Message_Creation_Date')
+        messages_list = [{'sender': message.Sender.username, 'text': message.Text, 'date': message.Message_Creation_Date.strftime('%Y-%m-%d %H:%M:%S')} for message in messages]
+        return JsonResponse(messages_list, safe=False)
+
+@csrf_exempt
+def send_message(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        chat_id = data['chat_id']
+        text = data['text']
+        user = request.user
+        try:
+            chat = Chat.objects.get(id=chat_id)
+            message = MessageText(Chat_id=chat, Text=text, Sender=user)
+            message.save()
+            return JsonResponse({'status': 'success'})
+        except Chat.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Чат не найден'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Метод не поддерживается'})
