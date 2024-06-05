@@ -9,15 +9,19 @@
         display: none;
     }
 </style>
-<div class="container mx-auto">
-    <div class="card w-100 bg-base-100 shadow-xl">
-        <div class="card-body" style="background-color: #FFFFFF;">
-            <h2 class="card-title mb-5" style="font-size: 32px;">Регистрация</h2>
+<div class="container mx-auto py-8">
+    <div class="card bg-white shadow-lg rounded-lg overflow-hidden" style="margin: 30px;">
+        <div class="card-body p-6">
+            <h2 class="text-2xl font-bold mb-5">Регистрация</h2>
             <form method="post">
-              {% csrf_token %}
-              {{ form|crispy }}
-                <p class="mb-5">Если у вас уже есть аккаунт, то вы можете <a href="{% url "users:loginPage" %}" class="link link-primary">войти </a>в систему.</p>
-              <button class="butt-all">зарегистрироваться</button>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <p class="mt-4">Если у вас уже есть аккаунт, то вы можете <a href="{% url 'users:loginPage' %}" class="text-blue-500 hover:underline">войти</a> в систему.</p>
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">
+                        Зарегистрироваться
+                    </button>
+                </div>
             </form>
         </div>
     </div>
