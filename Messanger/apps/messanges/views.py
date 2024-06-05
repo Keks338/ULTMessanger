@@ -112,6 +112,7 @@ def remove_chat(request):
             user_id = CustomUser.objects.get(id=data_user_id)
             user = CustomUser.objects.get(id=request.user.id)
             Chat.objects.filter(User1=user_id, User2=user).delete()
+            Chat.objects.filter(User1=user, User2=user_id).delete()
             return JsonResponse({'status': 'success', 'userId': data})  # Возвращаем ID добавленного друга
         except CustomUser.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Пользователь не найден'})

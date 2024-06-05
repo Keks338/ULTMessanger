@@ -89,7 +89,11 @@
             </div>
             <div class="col-span-2 h-full flex flex-col"> <!-- Форма чата -->
                 <div class="flex-grow overflow-auto">
-                    <div id="chat-messages-container" class="overflow-auto h-full"></div>
+                    <div id="chat-messages-container" class="overflow-auto" style="height: 500px;">
+                        <div class="scrollable-list-messages">
+
+                        </div>
+                    </div>
                 </div>
                 <form id="send-message-form" class="flex items-center p-2.5 bg-gray-800">
                     <input type="text" style="color: #fff;" id="message-input" class="input input-bordered flex-grow mr-2" placeholder="Введите сообщение" required>
@@ -311,10 +315,10 @@
                     url: '/get_messages/' + chatId + '/',
                     method: 'GET',
                     success: function(data) {
-                        $('#chat-messages-container').empty();
+                        $('.scrollable-list-messages').empty();
                         for (var i = 0; i < data.length; i++) {
                             var message = data[i];
-                            $('#chat-messages-container').append('<p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p>');
+                            $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></>');
                         }
                     }
                 });
