@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" style="background-color: white; color: black;">
+<html lang="en" style="background-color: white; color: black; height: 100%;">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,7 +15,7 @@
     <script src="{% static './js/scritpic.js' %}"></script>
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
     <div class="navbar text-neutral-content shadow mb-10" style="position: fixed; top: 0; z-index: 4; background-color: #000000;">
         <div class="flex-1">
             <a href="{% url "messanges:homePage" %}" class="btn btn-ghost normal-case text-xl">KoKaXaБо</a>
@@ -68,7 +68,7 @@
           {% endif %}
         </div>
     </div>
-    <div style="height: 100vh; height: 100%;">
+    <div style="flex: 1; background-color: #ccc;">
     {% block content %}{% endblock %}
     </div>
     <script src="{% static './js/jquery.min.js' %}"></script>
