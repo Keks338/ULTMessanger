@@ -111,6 +111,7 @@ def remove_chat(request):
         try:
             user_id = CustomUser.objects.get(id=data_user_id)
             user = CustomUser.objects.get(id=request.user.id)
+            print(user, user_id)
             Chat.objects.filter(User1=user_id, User2=user).delete()
             Chat.objects.filter(User1=user, User2=user_id).delete()
             return JsonResponse({'status': 'success', 'userId': data})  # Возвращаем ID добавленного друга
