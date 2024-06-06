@@ -85,6 +85,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    const searchField = document.getElementById('searchfield-chatlist');
+    const listItems = document.querySelectorAll('.scrollable-list-chatbox li');
+
+    searchField.addEventListener('input', function() {
+        const searchText = this.value.trim().toLowerCase();
+
+        listItems.forEach(function(item) {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
     const frnd = document.getElementById('friend');
     const no_frnd = document.getElementById('non-friend');
     const all_users = document.getElementById('all-users');

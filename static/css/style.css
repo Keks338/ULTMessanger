@@ -74,7 +74,6 @@ html, body {
 
 .scrollable-list li {
     padding: 10px;
-    border-bottom: 1px solid #eee;
 }
 
 .scrollable-list li:last-child {
@@ -100,7 +99,6 @@ html, body {
 
 .scrollable-list-messages li {
     padding: 10px;
-    border-bottom: 1px solid #eee;
 }
 
 .scrollable-list-messages li:last-child {
@@ -109,7 +107,6 @@ html, body {
 
 .scrollable-list-chat li {
     padding: 10px;
-    border-bottom: 1px solid #eee;
 }
 
 .scrollable-list-chat li:last-child {
