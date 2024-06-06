@@ -10,7 +10,15 @@
             <div class="border-r border-gray-700 p-2.5">
                 <center>
                     <h2 class="text-white">Чаты</h2>
-                    <input class="input input-bordered w-4/5" style="color: #fff; background-color: #2A303C;" style="color: #fff; background-color: #2A303C" id="searchfield" placeholder="Поиск">
+                    <form class="max-w-xl w-full">
+                        <div class="flex">
+                            <input class="flex py-[6px] px-4 border-[#cccccc] outline-none w-full rounded-tl-[40px] rounded-bl-[40px] focus:border-lightblue" style="color:rgb(255, 255, 255);" type="search" placeholder="Поиск">
+                            <button type="submit" class="py-2 px-5 bg-[#cccccc] dorder border-[#cccccc] border-l-0 rounded-tr-[40px] rounded-br-[40px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-cyan-950">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                              </svg>
+                              </button>
+                        </div>
+                    </form>
                 </center>
             </div>
             <div class="col-span-2 p-2.5"> 
@@ -21,7 +29,7 @@
         </div>
         <div class="grid grid-cols-3 chat-box border-b border-gray-700 h-full">
             <div class="border-r border-gray-700 p-2.5 bg-gray-800">
-                <div class="static-div-chat">
+                <div class="static-div-chat" style="height: 500px;">
                     <ul class="scrollable-list-chat">
                     {% for User in Users %}
                         {% if user.id == User.id %}
@@ -77,14 +85,12 @@
                     {% endfor %}
                     {% endif %}
                     {% endfor %}
-                    <li>
-                        <div class="button-chat bg-gray-700 rounded-lg p-2.5">
-                            <center>
-                                <h4 class="text-white">УПРАВЛЕНИЕ ЧАТАМИ</h4>
-                            </center>
-                        </div>
-                    </li>
                     </ul>
+                </div>
+                <div class="button-chat bg-gray-700 rounded-lg p-2.5" style="position: relative; top: 4%;">
+                    <center>
+                        <h4 class="text-white">УПРАВЛЕНИЕ ЧАТАМИ</h4>
+                    </center>
                 </div>
             </div>
             <div class="col-span-2 h-full flex flex-col"> <!-- Форма чата -->
@@ -96,7 +102,7 @@
                     </div>
                 </div>
                 <form id="send-message-form" class="flex items-center p-2.5 bg-gray-800">
-                    <input type="text" style="color: #fff; background-color: #2A303C;" id="message-input" class="input input-bordered flex-grow mr-2" placeholder="Введите сообщение" required>
+                    <input type="text" style="color: #fff; background-color: #2A303C;" id="message-input" class="input input-bordered flex-grow mr-2" placeholder="Введите сообщение" required > <i class="fa-solid fa-paperclip"></i><i class="fa-solid fa-microphone"></i>
                     <button type="submit" class="btn btn-primary">Отправить</button>
                 </form>
             </div>            

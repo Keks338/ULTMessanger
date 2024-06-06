@@ -17,7 +17,7 @@ $('.owl-carousel').owlCarousel({
 
 function updateChatBoxHeight() {
     var aboba = document.getElementsByClassName('chat-box');
-    var newHeight = window.innerHeight - 157.6 + 'px';
+    var newHeight = window.innerHeight - 149 + 'px';
 
     for (var i = 0; i < aboba.length; i++) {
         aboba[i].style.height = newHeight;
