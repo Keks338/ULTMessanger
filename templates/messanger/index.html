@@ -1,6 +1,5 @@
 {% extends "../base.html" %}
 {% load static %}
-{% load tags %}
 {% block title %}KoKaXaБо{% endblock %}
 {% block content %}
 
@@ -12,7 +11,7 @@
                     <h2 class="text-white">Чаты</h2>
                     <form class="max-w-xl w-full">
                         <div class="flex">
-                            <input class="flex py-[6px] px-4 border-[#cccccc] outline-none w-full rounded-tl-[40px] rounded-bl-[40px] focus:border-lightblue" style="color:rgb(255, 255, 255);" type="search" placeholder="Поиск">
+                            <input class="flex py-[6px] px-4 border-[#cccccc] outline-none w-full rounded-tl-[40px] rounded-bl-[40px] focus:border-lightblue" style="color:rgb(255, 255, 255);" type="search" placeholder="Поиск" id="searchfield-chatlist">
                             <button type="submit" class="py-2 px-5 bg-[#cccccc] dorder border-[#cccccc] border-l-0 rounded-tr-[40px] rounded-br-[40px]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-cyan-950">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                               </svg>
@@ -30,26 +29,24 @@
         <div class="grid grid-cols-3 chat-box border-b border-gray-700 h-full">
             <div class="border-r border-gray-700 p-2.5 bg-gray-800">
                 <div class="static-div-chat" style="height: 500px;">
-                    <ul class="scrollable-list-chat">
-                    {% for User in Users %}
+                    <ul role="list" class="divide-y divide-gray-100 scrollable-list-chatbox">
+                        {% for User in Users %}
                         {% if user.id == User.id %}
                             {% for Chat in Chats %}
                                 {% if user.id == Chat.User1.id and user.id == Chat.User2.id %}
-                    <li class="chat-friend" data-chat-id="{{ Chat.id }}">
-                        <div class="grid grid-cols-4 gap-4 bg-gray-700 rounded-lg mb-2.5">
-                            <div>
-                                <label tabindex="0" class="btn btn-ghost btn-circle avatar mx-auto h-24 w-24">
-                                    <div class="w-16 rounded-full">
-                                        <img src="{% static './images/star-favorite-icon-sign-design-free.png' %}" alt="Logo">
-                                    </div>
-                                </label>
+                        <li class="flex justify-between gap-x-6 py-5 chat-friend" data-chat-id="{{ Chat.id }}">
+                          <div class="flex min-w-0 gap-x-4">
+                            <img class="h-12 w-12 flex-none rounded-full bg-gray-50" src="{% static './images/star-favorite-icon-sign-design-free.png' %}" alt="Logo">
+                            <div class="min-w-0 flex-auto">
+                                <p class="text-sm font-semibold leading-6 text-gray-900">Избранное</p>
+                                <p class="mt-1 truncate text-xs leading-5 text-gray-500 last-message-{{ Chat.id }}">
+                                    
+                                </p>
                             </div>
-                            <div class="col-span-3">
-                                <h1 class="mb-3 text-white">Избранное</h1>
-                                <p class="text-gray-600">{{ User.short_Desc | truncatechars:30 }}</p>
-                            </div>
+                          </div>
+                          <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                         </div>
-                    </li>
+                        </li>
                     {% endif %}
                     {% endfor %}
                     {% endif %}
@@ -59,27 +56,23 @@
                             {% for Chat in Chats %}
                                 {% if user.id == Chat.User1.id or user.id == Chat.User2.id %}
                                     {% if User.id == Chat.User1.id or User.id == Chat.User2.id %}
-                    <li class="chat-friend" data-chat-id="{{ Chat.id }}">
-                        <div class="grid grid-cols-4 gap-4 bg-gray-700 rounded-lg mb-2.5">
-                            <div>
-                                <label tabindex="0" class="btn btn-ghost btn-circle avatar mx-auto h-24 w-24">
-                                    {% if User.image.url == "/media/%20" %}
-                                        <div class="w-16 rounded-full">
-                                            <img src="{% static './images/logo.png' %}" alt="Logo">
+                                    <li class="flex justify-between gap-x-6 py-5 chat-friend" data-chat-id="{{ Chat.id }}">
+                                        <div class="flex min-w-0 gap-x-4">
+                                            {% if User.image.url == "/media/%20" %}
+                                            <img class="h-12 w-12 flex-none rounded-full bg-black" src="{% static './images/logo.png' %}" alt="Logo">
+                                            {% else %}
+                                            <img class="h-12 w-12 flex-none rounded-full bg-black" src="{{ User.image.url }}" alt="Logo">
+                                            {% endif %}
+                                          <div class="min-w-0 flex-auto">
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">{{ User.username }}</p>
+                                            <p class="mt-1 truncate text-xs leading-5 text-gray-500 last-message-{{ Chat.id }}">
+
+                                            </p>
+                                          </div>
                                         </div>
-                                    {% else %}
-                                        <div class="w-16 rounded-full">
-                                            <img src="{{ User.image.url }}" alt="Logo">
-                                        </div>
-                                    {% endif %}
-                                </label>
-                            </div>
-                            <div class="col-span-3">
-                                <h1 class="mb-3 text-white">{{ User.username }}</h1>
-                                <p class="text-gray-600">{{ User.short_Desc | truncatechars:30 }}</p>
-                            </div>
-                        </div>
-                    </li>
+                                    <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                                </div>
+                            </li>
                     {% endif %}
                     {% endif %}
                     {% endfor %}
@@ -314,7 +307,9 @@
 <script>
     $(document).ready(function() {
         var chatId = null;
-    
+        
+        loadlastMessage();
+
         function loadMessages() {
             if (chatId) {
                 $.ajax({
@@ -324,16 +319,32 @@
                         $('.scrollable-list-messages').empty();
                         for (var i = 0; i < data.length; i++) {
                             var message = data[i];
-                            $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></>');
+                            $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></li></>');
                         }
                     }
                 });
             }
         }
+
+        function loadlastMessage() {
+            {% for Chat in Chats %}
+                $.ajax({
+                    url: '/get_messages/' + {{ Chat.id }} + '/',
+                    method: 'GET',
+                    success: function(data) {
+                        $('.last-message-{{ Chat.id }}').empty();
+                        var message = data[data.length-1];
+                        $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></>');
+                    }
+                });
+            {% endfor %}
+            console.log("Checked");
+        }
     
         $('.chat-friend').on('click', function() {
             chatId = $(this).data('chat-id');
             loadMessages();
+            loadlastMessage();
         });
     
         $('#send-message-form').submit(function(event) {
@@ -348,6 +359,7 @@
                     success: function() {
                         $('#message-input').val('');
                         loadMessages();
+                        loadlastMessage();
                     }
                 });
             } else {
@@ -356,6 +368,7 @@
         });
 
         setInterval(loadMessages, 5000);
+        setInterval(loadlastMessage, 5000);
     });
 </script>
 
