@@ -17,7 +17,7 @@ $('.owl-carousel').owlCarousel({
 
 function updateChatBoxHeight() {
     var aboba = document.getElementsByClassName('chat-box');
-    var newHeight = window.innerHeight - 157.6 + 'px';
+    var newHeight = window.innerHeight - 149 + 'px';
 
     for (var i = 0; i < aboba.length; i++) {
         aboba[i].style.height = newHeight;
@@ -69,6 +69,24 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const searchField = document.getElementById('searchfield-friend');
     const listItems = document.querySelectorAll('.scrollable-list li');
+
+    searchField.addEventListener('input', function() {
+        const searchText = this.value.trim().toLowerCase();
+
+        listItems.forEach(function(item) {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchField = document.getElementById('searchfield-chatlist');
+    const listItems = document.querySelectorAll('.scrollable-list-chatbox li');
 
     searchField.addEventListener('input', function() {
         const searchText = this.value.trim().toLowerCase();
