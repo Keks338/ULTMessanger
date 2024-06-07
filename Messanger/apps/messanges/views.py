@@ -1,14 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import CustomUser
-from ..messanges.models import Chat, GroupChat, MessageText
+from ..messanges.models import Chat, GroupChat, MessageText, MediaFile
 import json
 import random
+from .factories import FormFactory
+from .forms import MediaFileForm
+
 
 def homePage(request):
     user = request.user
     hide_element = False
+    files = MediaFile.objects.all()
     Users = CustomUser.objects.all().order_by("username")
     massa = []
     if user.is_authenticated:
@@ -29,6 +33,7 @@ def homePage(request):
         'Users': Users,
         'Chats': Chats,
         'GroupChats': GroupChats,
+        'Files': files,
         'massa': massa,
     })
 
@@ -144,3 +149,22 @@ def send_message(request):
             return JsonResponse({'status': 'error', 'message': 'Чат не найден'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Метод не поддерживается'})
+
+def upload_file(request):
+    if request.method == 'POST':
+        file_type = request.POST.get('file_type')  # Получаем тип файла из POST данных
+        form_class = FormFactory.get_form(file_type)
+
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            # return redirect('messanges:file_list')
+            return JsonResponse({'status': 'success'})
+    else:
+        form = MediaFileForm()
+    return render(request, 'messanger/upload.html', {'form': form})
+
+'''def file_list(request):
+    files = MediaFile.objects.all()
+    return render(request, 'messanger/file_list.html', {'files': files})'''
+
