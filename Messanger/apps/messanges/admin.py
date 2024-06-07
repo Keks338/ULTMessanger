@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MessageText, GroupChat, Chat
+from .models import MessageText, GroupChat, Chat, MediaFile
 
 @admin.register(MessageText)
 class MessageTextAdmin(admin.ModelAdmin):
@@ -13,3 +13,7 @@ class GroupChatAdmin(admin.ModelAdmin):
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):
     list_display = ('User1', 'User2', 'Creation_date')
+
+@admin.register(MediaFile)
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ('title', 'image', 'video', 'audio', 'Sender_id', 'Chat_id', 'Group_chat_id')
