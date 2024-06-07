@@ -1,21 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Upload File</title>
-</head>
-<body>
-    <h1>Upload File</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="file_type">Select File Type:</label>
-        <select id="file_type" name="file_type">
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-        </select>
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
-    <a href="{% url 'messanges:file_list' %}">View all files</a>
-</body>
-</html>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="file_type">Выберите тип файла:</label>
+    <select id="file_type" name="file_type">
+        <option value="image">Изображение</option>
+        <option value="video">Видео</option>
+        <option value="audio">Аудио</option>
+    </select>
+    {{ form.as_p }}
+    <button type="submit">Загрузить</button>
+</form>

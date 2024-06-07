@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Files List</title>
+    <title>Список всех файлов</title>
 </head>
 <body>
-    <h1>Files List</h1>
+    <h1>Список всех файлов</h1>
     <ul>
         {% for file in files %}
             <li>{{ file.title }}</li>
@@ -14,17 +14,15 @@
             {% if file.video %}
                 <video width="320" height="240" controls>
                     <source src="{{ file.video.url }}" type="video/mp4">
-                    Your browser does not support the video tag.
                 </video>
             {% endif %}
             {% if file.audio %}
                 <audio controls>
                     <source src="{{ file.audio.url }}" type="audio/mpeg">
-                    Your browser does not support the audio element.
                 </audio>
             {% endif %}
         {% endfor %}
     </ul>
-    <a href="{% url 'messanges:upload_file' %}">Upload new file</a>
+    <a href="{% url 'messanges:upload_file' %}">Загрузить новый файл</a>
 </body>
 </html>

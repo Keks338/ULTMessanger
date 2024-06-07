@@ -102,7 +102,7 @@
                                     </i>
                                 </a>
                                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 rounded-br-none">
-                                  <li><a style="color: #fff;">Видео</a></li>
+                                  <li><a style="color: #fff;" >Видео</a></li>
                                   <li><a style="color: #fff;">Фотография</a></li>
                                   <li><a style="color: #fff;">Аудио</a></li>
                                 </ul>
@@ -230,6 +230,14 @@
     </div>
 </div>
 
+<div class="pop-up-background-files fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="pop-up-card"> <!-- Система "Друзей" -->
+        <a class="btn btn-ghost close-add-files"><i class="fa-solid fa-xmark fa-2x"></i></a>
+        <h2 style="display: inline-block; position: relative; left: 35%;">Добавить файл</h2>
+        {% include './upload.html' %}
+    </div>
+</div>
+
 <div class="pop-up-background-chats hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
     <div class="pop-up-card"> <!-- Модальное окно "Чатов" -->
         <a class="btn btn-ghost close-add-chat"><i class="fa-solid fa-xmark fa-2x"></i></a>
@@ -322,24 +330,6 @@
 
     loadlastMessage();
 
-    function loadMessages() {
-        if (chatId) {
-            $.ajax({
-                url: '/get_messages/' + chatId + '/',
-                method: 'GET',
-                success: function(data) {
-                    $('.scrollable-list-messages').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        var message = data[i];
-                        $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></li>');
-                    }
-                    messageObserver.notify(data);
-                    startLongPolling(); // Start long polling after initial load
-                }
-            });
-        }
-    }
-
     function loadlastMessage() {
         {% for Chat in Chats %}
             $.ajax({
@@ -348,7 +338,20 @@
                 success: function(data) {
                     $('.last-message-{{ Chat.id }}').empty();
                     var message = data[data.length-1];
-                    $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></>');
+                    if (message.type == "message"){
+                        $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.content + '</p></>');
+                    }
+                    else if(message.type == "file"){
+                        if (message.image){
+                            $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.title + ' <em>' + 'Изображение' + '</em></p></>');
+                        }
+                        else if (message.video){
+                            $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.title + ' <em>' + 'Видео' + '</em></p></>');
+                        }
+                        else if (message.audio){
+                            $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.title + ' <em>' + 'Аудио' + '</em></p></>');
+                        }
+                    }
                 }
             });
         {% endfor %}
@@ -356,7 +359,7 @@
 
     $('.chat-friend').on('click', function() {
         chatId = $(this).data('chat-id');
-        loadMessages();
+        startLongPolling();
         loadlastMessage();
     });
 
@@ -389,10 +392,29 @@
                     $('.scrollable-list-messages').empty();
                     for (var i = 0; i < data.length; i++) {
                         var message = data[i];
-                        $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></li>');
+                        if (message.type == "message"){
+                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
+                            if ("{{user}}" == message.sender){
+                                $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
+                            } 
+                            // Остальные пользователи-отправители сообщений
+                            else {
+                                $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
+                            }
+                        }
+                        else if (message.type == "file"){
+                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
+                            if ("{{user}}" == message.sender){
+                                $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                            }
+                            // Остальные пользователи-отправители сообщений
+                            else {
+                                $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                            }
+                        }     
                     }
                     messageObserver.notify(data);
-                    startLongPolling();
+                    // закоментил потому что эта функция вызывает сама себя и начинает сильно лог-лист вверх поднимать (ПОТОМ НУЖНО БУДЕТ РАСКОМЕНТИТЬ!!!)  startLongPolling();
                 },
                 error: function() {
                     setTimeout(startLongPolling, 5000);
@@ -418,6 +440,9 @@
     messageObserver.subscribe(function(data) {
         console.log("Messages updated:", data);
     });
+
+    // Как раскоментишь то что находиться в функции удали сет интервал
+    setInterval(startLongPolling, 5000);
 });
 </script>
 

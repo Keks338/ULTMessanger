@@ -28,3 +28,4 @@ class MediaFile(models.Model):
     Sender_id = models.ForeignKey(CustomUser, related_name='message_sender', null=True, blank=True, on_delete=models.CASCADE)
     Chat_id = models.ForeignKey(Chat, null=True, blank=True, on_delete=models.CASCADE)
     Group_chat_id = models.ForeignKey(GroupChat, null=True, blank=True, on_delete=models.CASCADE)
+    File_Creation_Date = models.DateField(auto_now_add=True)
