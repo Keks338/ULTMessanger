@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список всех файлов</title>
+</head>
+<body>
+    <h1>Список всех файлов</h1>
+    <ul>
+        {% for file in files %}
+            <li>{{ file.title }}</li>
+            {% if file.image %}
+                <img src="{{ file.image.url }}" alt="{{ file.title }}">
+                {{ file.Sender_id }}
+            {% endif %}
+            {% if file.video %}
+                <video width="320" height="240" controls>
+                    <source src="{{ file.video.url }}" type="video/mp4">
+                    {{ file.Sender_id }}
+                </video>
+            {% endif %}
+            {% if file.audio %}
+                <audio controls>
+                    <source src="{{ file.audio.url }}" type="audio/mpeg">
+                    {{ file.Sender_id }}
+                </audio>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>

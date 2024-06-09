@@ -38,7 +38,7 @@
                           <div class="flex min-w-0 gap-x-4">
                             <img class="h-12 w-12 flex-none rounded-full bg-gray-50" src="{% static './images/star-favorite-icon-sign-design-free.png' %}" alt="Logo">
                             <div class="min-w-0 flex-auto">
-                                <p class="text-sm font-semibold leading-6 text-gray-900">Избранное</p>
+                                <p class="text-sm font-semibold leading-6 text-white-100" style="color: #fff;">Избранное</p>
                                 <p class="mt-1 truncate text-xs leading-5 text-gray-500 last-message-{{ Chat.id }}">
                                     
                                 </p>
@@ -64,7 +64,7 @@
                                             <img class="h-12 w-12 flex-none rounded-full bg-black" src="{{ User.image.url }}" alt="Logo">
                                             {% endif %}
                                           <div class="min-w-0 flex-auto">
-                                            <p class="text-sm font-semibold leading-6 text-gray-900">{{ User.username }}</p>
+                                            <p class="text-sm font-semibold leading-6 text-white-100" style="color: #fff;">{{ User.username }}</p>
                                             <p class="mt-1 truncate text-xs leading-5 text-gray-500 last-message-{{ Chat.id }}">
 
                                             </p>
@@ -90,13 +90,24 @@
                 <div class="flex-grow overflow-auto">
                     <div id="chat-messages-container" class="overflow-auto" style="height: 500px;">
                         <div class="scrollable-list-messages">
-
+                            
                         </div>
                     </div>
                 </div>
                 <form id="send-message-form" class="flex items-center p-2.5 bg-gray-800">
-                    <input type="text" style="color: #fff; background-color: #2A303C;" id="message-input" class="input input-bordered flex-grow mr-2" placeholder="Введите сообщение" required > <i class="fa-solid fa-paperclip"></i><i class="fa-solid fa-microphone"></i>
-                    <button type="submit" class="btn btn-primary">Отправить</button>
+                    <input type="text" style="color: #fff; background-color: #2A303C;" id="message-input" class="input input-bordered flex-grow mr-2" placeholder="Введите сообщение" required >
+                            <div class="dropdown dropdown-top dropdown-end">
+                                <a tabindex="0" role="button" class="btn btn-primary rounded-r-none">
+                                    <i class="fa-solid fa-paperclip">
+                                    </i>
+                                </a>
+                                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 rounded-br-none">
+                                  <li><a style="color: #fff;" class="open-file-video">Видео</a></li>
+                                  <li><a style="color: #fff;" class="open-file-image">Фотография</a></li>
+                                  <li><a style="color: #fff;" class="open-file-audio">Аудио</a></li>
+                                </ul>
+                              </div>
+                    <button type="submit" class="btn btn-primary rounded-l-none">Отправить</button>
                 </form>
             </div>            
         </div>
@@ -219,6 +230,22 @@
     </div>
 </div>
 
+<div class="pop-up-background-files hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="pop-up-card" id="file-upload-form"> <!-- Система "Файлов" -->
+        <a class="btn btn-ghost close-add-files"><i class="fa-solid fa-xmark fa-2x"></i></a>
+        <h2 style="display: inline-block; position: relative; left: 35%;">Добавить файл</h2>
+        <div class="file-image-form hidden">
+            {% include './upload_image.html' %}
+        </div>
+        <div class="file-video-form hidden">
+            {% include './upload_video.html' %}
+        </div>
+        <div class="file-audio-form hidden">
+            {% include './upload_audio.html' %}
+        </div>
+    </div>
+</div>
+
 <div class="pop-up-background-chats hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
     <div class="pop-up-card"> <!-- Модальное окно "Чатов" -->
         <a class="btn btn-ghost close-add-chat"><i class="fa-solid fa-xmark fa-2x"></i></a>
@@ -306,69 +333,149 @@
 
 <script>
     $(document).ready(function() {
-        var chatId = null;
-        
-        loadlastMessage();
+    var chatId = null;
+    var messageObserver = new MessageObserver();
 
-        function loadMessages() {
-            if (chatId) {
-                $.ajax({
-                    url: '/get_messages/' + chatId + '/',
-                    method: 'GET',
-                    success: function(data) {
-                        $('.scrollable-list-messages').empty();
-                        for (var i = 0; i < data.length; i++) {
-                            var message = data[i];
-                            $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></li></>');
+    loadlastMessage();
+
+    function loadlastMessage() {
+        {% for Chat in Chats %}
+            $.ajax({
+                url: '/get_messages/' + {{ Chat.id }} + '/',
+                method: 'GET',
+                success: function(data) {
+                    $('.last-message-{{ Chat.id }}').empty();
+                    var message = data[data.length-1];
+                    if (message.type == "message"){
+                        $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.content + '</p></>');
+                    }
+                    else if(message.type == "file"){
+                        if (message.image){
+                            $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.title + ' <em>' + 'Изображение' + '</em></p></>');
+                        }
+                        else if (message.video){
+                            $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.title + ' <em>' + 'Видео' + '</em></p></>');
+                        }
+                        else if (message.audio){
+                            $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.title + ' <em>' + 'Аудио' + '</em></p></>');
                         }
                     }
-                });
-            }
-        }
+                }
+            });
+        {% endfor %}
+    }
 
-        function loadlastMessage() {
-            {% for Chat in Chats %}
-                $.ajax({
-                    url: '/get_messages/' + {{ Chat.id }} + '/',
-                    method: 'GET',
-                    success: function(data) {
-                        $('.last-message-{{ Chat.id }}').empty();
-                        var message = data[data.length-1];
-                        $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.text + ' <em>' + message.date + '</em></p></>');
-                    }
-                });
-            {% endfor %}
-        }
-    
-        $('.chat-friend').on('click', function() {
-            chatId = $(this).data('chat-id');
-            loadMessages();
-            loadlastMessage();
-        });
-    
-        $('#send-message-form').submit(function(event) {
-            event.preventDefault();
-            if (chatId) {
-                var messageText = $('#message-input').val();
-                $.ajax({
-                    url: '/send_message/',
-                    method: 'POST',
-                    data: JSON.stringify({ chat_id: chatId, text: messageText }),
-                    contentType: 'application/json',
-                    success: function() {
-                        $('#message-input').val('');
-                        loadMessages();
-                        loadlastMessage();
-                    }
-                });
-            } else {
-                alert("Пожалуйста, выберите чат");
-            }
-        });
+    $('.chat-friend').on('click', function() {
+        chatId = $(this).data('chat-id');
+        $('.file-image-form input[name="Chat_id"]').val(chatId);
+        $('.file-video-form input[name="Chat_id"]').val(chatId);
+        $('.file-audio-form input[name="Chat_id"]').val(chatId);
+        startLongPolling();
+        loadlastMessage();
 
-        setInterval(loadMessages, 5000);
-        setInterval(loadlastMessage, 5000);
     });
+
+    $('#send-message-form').submit(function(event) {
+        event.preventDefault();
+        if (chatId) {
+            var messageText = $('#message-input').val();
+            $.ajax({
+                url: '/send_message/',
+                method: 'POST',
+                data: JSON.stringify({ chat_id: chatId, text: messageText }),
+                contentType: 'application/json',
+                success: function() {
+                    $('#message-input').val('');
+                    loadMessages();
+                    loadlastMessage();
+                }
+            });
+        } else {
+            alert("Пожалуйста, выберите чат");
+        }
+    });
+
+    function startLongPolling() {
+        if (chatId) {
+            $.ajax({
+                url: '/get_messages/' + chatId + '/',
+                method: 'GET',
+                success: function(data) {
+                    $('.scrollable-list-messages').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        var message = data[i];
+                        if (message.type == "message"){
+                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
+                            if ("{{user}}" == message.sender){
+                                $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
+                            } 
+                            // Остальные пользователи-отправители сообщений
+                            else {
+                                $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
+                            }
+                        }
+                        else if (message.type == "file"){
+                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
+                            if ( message.image ){
+                                if ("{{user}}" == message.sender){
+                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                                // Остальные пользователи-отправители сообщений
+                                else {
+                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                            }
+                            else if ( message.video ){
+                                if ("{{user}}" == message.sender){
+                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                                // Остальные пользователи-отправители сообщений
+                                else {
+                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video><em>' + message.creation_date + '</em></p></li>');
+                                }
+                            }
+                            else if ( message.audio ){
+                                if ("{{user}}" == message.sender){
+                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                                // Остальные пользователи-отправители сообщений
+                                else {
+                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio><em>' + message.creation_date + '</em></p></li>');
+                                }
+                            }
+                        }     
+                    }
+                    messageObserver.notify(data);
+                    // закоментил потому что эта функция вызывает сама себя и начинает сильно лог-лист вверх поднимать (ПОТОМ НУЖНО БУДЕТ РАСКОМЕНТИТЬ!!!)  startLongPolling();
+                },
+                error: function() {
+                    setTimeout(startLongPolling, 5000);
+                }
+            });
+        }
+    }
+
+    function MessageObserver() {
+        this.subscribers = [];
+
+        this.subscribe = function(callback) {
+            this.subscribers.push(callback);
+        };
+
+        this.notify = function(data) {
+            this.subscribers.forEach(function(callback) {
+                callback(data);
+            });
+        };
+    }
+
+    messageObserver.subscribe(function(data) {
+        console.log("Messages updated:", data);
+    });
+
+    // Как раскоментишь то что находиться в функции удали сет интервал
+    setInterval(startLongPolling, 5000);
+});
 </script>
 
 {% endblock %}
