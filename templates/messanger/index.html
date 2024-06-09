@@ -396,64 +396,53 @@
     });
 
     function startLongPolling() {
-        if (chatId) {
-            $.ajax({
-                url: '/get_messages/' + chatId + '/',
-                method: 'GET',
-                success: function(data) {
-                    $('.scrollable-list-messages').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        var message = data[i];
-                        if (message.type == "message"){
-                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
-                            if ("{{user}}" == message.sender){
-                                $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
-                            } 
-                            // Остальные пользователи-отправители сообщений
-                            else {
-                                $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
-                            }
-                        }
-                        else if (message.type == "file"){
-                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
-                            if ( message.image ){
-                                if ("{{user}}" == message.sender){
-                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                                // Остальные пользователи-отправители сообщений
-                                else {
-                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                            }
-                            else if ( message.video ){
-                                if ("{{user}}" == message.sender){
-                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                                // Остальные пользователи-отправители сообщений
-                                else {
-                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video><em>' + message.creation_date + '</em></p></li>');
-                                }
-                            }
-                            else if ( message.audio ){
-                                if ("{{user}}" == message.sender){
-                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                                // Остальные пользователи-отправители сообщений
-                                else {
-                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio><em>' + message.creation_date + '</em></p></li>');
-                                }
-                            }
-                        }     
+    if (chatId) {
+        $.ajax({
+            url: '/get_messages/' + chatId + '/',
+            method: 'GET',
+            success: function(data) {
+                $('.scrollable-list-messages').empty();
+                for (var i = 0; i < data.length; i++) {
+                    var message = data[i];
+                    var messageHtml = '';
+
+                    if (message.type == "message"){
+                        messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
+                        messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.content + '</p>';
+                        messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
+                        messageHtml += '</li>';
                     }
-                    messageObserver.notify(data);
-                    // закоментил потому что эта функция вызывает сама себя и начинает сильно лог-лист вверх поднимать (ПОТОМ НУЖНО БУДЕТ РАСКОМЕНТИТЬ!!!)  startLongPolling();
-                },
-                error: function() {
-                    setTimeout(startLongPolling, 5000);
+                    else if (message.type == "file"){
+                        messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
+                        messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.title + '</p>';
+
+                        if (message.image) {
+                            messageHtml += '<img src="' + message.image + '" style="max-height:200px;">';
+                        }
+                        else if (message.video) {
+                            messageHtml += '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video>';
+                        }
+                        else if (message.audio) {
+                            messageHtml += '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio>';
+                        }
+
+                        messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
+                        messageHtml += '</li>';
+                    }
+
+                    $('.scrollable-list-messages').append(messageHtml);
                 }
-            });
-        }
+                messageObserver.notify(data);
+                startLongPolling();
+            },
+            error: function() {
+                setTimeout(startLongPolling, 5000);
+            }
+        });
     }
+}
+
+
 
     function MessageObserver() {
         this.subscribers = [];
@@ -473,8 +462,6 @@
         console.log("Messages updated:", data);
     });
 
-    // Как раскоментишь то что находиться в функции удали сет интервал
-    setInterval(startLongPolling, 5000);
 });
 </script>
 
