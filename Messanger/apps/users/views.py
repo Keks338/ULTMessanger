@@ -66,7 +66,7 @@ def profilePage(request, user_id):
 def logoutUser(request):
     logout(request)
     messages.info(request, "Вы вышли из аккаунта.")
-    return redirect("messanges:homePage")
+    return redirect("users:loginPage")
 
 # def adminPage(request):
 #     products = Product.objects.all()
