@@ -90,7 +90,7 @@
                 <div class="flex-grow overflow-auto">
                     <div id="chat-messages-container" class="overflow-auto" style="height: 500px;">
                         <div class="scrollable-list-messages">
-
+                            
                         </div>
                     </div>
                 </div>
@@ -102,9 +102,9 @@
                                     </i>
                                 </a>
                                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 rounded-br-none">
-                                  <li><a style="color: #fff;" >Видео</a></li>
-                                  <li><a style="color: #fff;">Фотография</a></li>
-                                  <li><a style="color: #fff;">Аудио</a></li>
+                                  <li><a style="color: #fff;" class="open-file-video">Видео</a></li>
+                                  <li><a style="color: #fff;" class="open-file-image">Фотография</a></li>
+                                  <li><a style="color: #fff;" class="open-file-audio">Аудио</a></li>
                                 </ul>
                               </div>
                     <button type="submit" class="btn btn-primary rounded-l-none">Отправить</button>
@@ -230,11 +230,19 @@
     </div>
 </div>
 
-<div class="pop-up-background-files fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-    <div class="pop-up-card"> <!-- Система "Друзей" -->
+<div class="pop-up-background-files hidden fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="pop-up-card" id="file-upload-form"> <!-- Система "Файлов" -->
         <a class="btn btn-ghost close-add-files"><i class="fa-solid fa-xmark fa-2x"></i></a>
         <h2 style="display: inline-block; position: relative; left: 35%;">Добавить файл</h2>
-        {% include './upload.html' %}
+        <div class="file-image-form hidden">
+            {% include './upload_image.html' %}
+        </div>
+        <div class="file-video-form hidden">
+            {% include './upload_video.html' %}
+        </div>
+        <div class="file-audio-form hidden">
+            {% include './upload_audio.html' %}
+        </div>
     </div>
 </div>
 
@@ -359,8 +367,12 @@
 
     $('.chat-friend').on('click', function() {
         chatId = $(this).data('chat-id');
+        $('.file-image-form input[name="Chat_id"]').val(chatId);
+        $('.file-video-form input[name="Chat_id"]').val(chatId);
+        $('.file-audio-form input[name="Chat_id"]').val(chatId);
         startLongPolling();
         loadlastMessage();
+
     });
 
     $('#send-message-form').submit(function(event) {
@@ -404,12 +416,32 @@
                         }
                         else if (message.type == "file"){
                             // Условие-определение того, что отправитель сообщения - это текущий пользователь
-                            if ("{{user}}" == message.sender){
-                                $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                            if ( message.image ){
+                                if ("{{user}}" == message.sender){
+                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                                // Остальные пользователи-отправители сообщений
+                                else {
+                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                                }
                             }
-                            // Остальные пользователи-отправители сообщений
-                            else {
-                                $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
+                            else if ( message.video ){
+                                if ("{{user}}" == message.sender){
+                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                                // Остальные пользователи-отправители сообщений
+                                else {
+                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video><em>' + message.creation_date + '</em></p></li>');
+                                }
+                            }
+                            else if ( message.audio ){
+                                if ("{{user}}" == message.sender){
+                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio> <em>' + message.creation_date + '</em></p></li>');
+                                }
+                                // Остальные пользователи-отправители сообщений
+                                else {
+                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio><em>' + message.creation_date + '</em></p></li>');
+                                }
                             }
                         }     
                     }

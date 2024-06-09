@@ -29,13 +29,13 @@ def homePage(request):
 
     if request.method == 'POST':
         file_type = request.POST.get('file_type')
+        chat_id = request.POST.get('chat_id')
         form_class = FormFactory.get_form(file_type)
 
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('messanges:file_list')
-            # return JsonResponse({'status': 'success'})
+            return redirect("messanges:homePage")
     else:
         form = MediaFileForm()
 

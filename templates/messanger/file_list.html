@@ -10,19 +10,21 @@
             <li>{{ file.title }}</li>
             {% if file.image %}
                 <img src="{{ file.image.url }}" alt="{{ file.title }}">
+                {{ file.Sender_id }}
             {% endif %}
             {% if file.video %}
                 <video width="320" height="240" controls>
                     <source src="{{ file.video.url }}" type="video/mp4">
+                    {{ file.Sender_id }}
                 </video>
             {% endif %}
             {% if file.audio %}
                 <audio controls>
                     <source src="{{ file.audio.url }}" type="audio/mpeg">
+                    {{ file.Sender_id }}
                 </audio>
             {% endif %}
         {% endfor %}
     </ul>
-    <a href="{% url 'messanges:upload_file' %}">Загрузить новый файл</a>
 </body>
 </html>

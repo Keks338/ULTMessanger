@@ -34,11 +34,16 @@ window.addEventListener('resize', updateChatBoxHeight);
 document.addEventListener('DOMContentLoaded', function() {
     const popUpBackground = document.querySelector('.pop-up-background-friends');
     const popUpBackground2 = document.querySelector('.pop-up-background-chats');
+    const popUpBackground3 = document.querySelector('.pop-up-background-files');
     const popUpCard = document.querySelector('.pop-up-card');
     const closeButton = document.querySelector('.close-add-friend');
     const closeButton2 = document.querySelector('.close-add-chat');
+    const closeButton3 = document.querySelector('.close-add-files');
     const openButton = document.querySelector('.add-chat');
     const openButton2 = document.querySelector('.button-chat');
+    const openFileAudio = document.querySelector('.open-file-audio');
+    const openFileVideo = document.querySelector('.open-file-video');
+    const openFileImage = document.querySelector('.open-file-image');
 
     closeButton.addEventListener('click', function() {
         popUpCard.classList.add('hide');
@@ -63,6 +68,24 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             popUpBackground2.style.display = 'block';
         }, 500);
+    });
+    openFileAudio.addEventListener('click', function() {
+        popUpBackground3.classList.remove('hidden');
+        document.querySelector('.file-audio-form').classList.remove('hidden');
+    });
+    openFileImage.addEventListener('click', function() {
+        popUpBackground3.classList.remove('hidden');
+        document.querySelector('.file-image-form').classList.remove('hidden');
+    });
+    openFileVideo.addEventListener('click', function() {
+        popUpBackground3.classList.remove('hidden');
+        document.querySelector('.file-video-form').classList.remove('hidden');
+    });
+    closeButton3.addEventListener('click', function() {
+        popUpBackground3.classList.add('hidden');
+        document.querySelector('.file-video-form').classList.add('hidden');
+        document.querySelector('.file-image-form').classList.add('hidden');
+        document.querySelector('.file-audio-form').classList.add('hidden');
     });
 });
 
