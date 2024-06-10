@@ -17,10 +17,20 @@ $('.owl-carousel').owlCarousel({
 
 function updateChatBoxHeight() {
     var aboba = document.getElementsByClassName('chat-box');
+    var aboba2 = document.getElementsByClassName('static-div-chat');
+    var aboba3 = document.getElementsByClassName('scrollable-list-messages');
     var newHeight = window.innerHeight - 149 + 'px';
+    var newHeight2 = window.innerHeight - 217 + 'px';
+    var newHeight3 = window.innerHeight - 217 + 'px';
 
     for (var i = 0; i < aboba.length; i++) {
         aboba[i].style.height = newHeight;
+    }
+    for (var i = 0; i < aboba2.length; i++) {
+        aboba2[i].style.height = newHeight2;
+    }
+    for (var i = 0; i < aboba3.length; i++) {
+        aboba3[i].style.height = newHeight3;
     }
 }
 
@@ -68,18 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             popUpBackground2.style.display = 'block';
         }, 500);
-    });
-    openFileAudio.addEventListener('click', function() {
-        popUpBackground3.classList.remove('hidden');
-        document.querySelector('.file-audio-form').classList.remove('hidden');
-    });
-    openFileImage.addEventListener('click', function() {
-        popUpBackground3.classList.remove('hidden');
-        document.querySelector('.file-image-form').classList.remove('hidden');
-    });
-    openFileVideo.addEventListener('click', function() {
-        popUpBackground3.classList.remove('hidden');
-        document.querySelector('.file-video-form').classList.remove('hidden');
     });
     closeButton3.addEventListener('click', function() {
         popUpBackground3.classList.add('hidden');

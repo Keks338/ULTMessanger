@@ -28,7 +28,7 @@
         </div>
         <div class="grid grid-cols-3 chat-box border-b border-gray-700 h-full">
             <div class="border-r border-gray-700 p-2.5 bg-gray-800">
-                <div class="static-div-chat" style="height: 500px;">
+                <div class="static-div-chat">
                     <ul role="list" class="divide-y divide-gray-100 scrollable-list-chatbox">
                         {% for User in Users %}
                         {% if user.id == User.id %}
@@ -80,7 +80,7 @@
                     {% endfor %}
                     </ul>
                 </div>
-                <div class="button-chat bg-gray-700 rounded-lg p-2.5" style="position: relative; top: 4%;">
+                <div class="button-chat bg-gray-700 rounded-lg p-2.5">
                     <center>
                         <h4 class="text-white">УПРАВЛЕНИЕ ЧАТАМИ</h4>
                     </center>
@@ -88,7 +88,7 @@
             </div>
             <div class="col-span-2 h-full flex flex-col"> <!-- Форма чата -->
                 <div class="flex-grow overflow-auto">
-                    <div id="chat-messages-container" class="overflow-auto" style="height: 500px;">
+                    <div id="chat-messages-container" class="overflow-auto">
                         <div class="scrollable-list-messages">
                             
                         </div>
@@ -335,6 +335,37 @@
     $(document).ready(function() {
     var chatId = null;
     var messageObserver = new MessageObserver();
+    const openFileAudio = document.querySelector('.open-file-audio');
+    const openFileVideo = document.querySelector('.open-file-video');
+    const openFileImage = document.querySelector('.open-file-image');
+
+    $('.open-file-audio').on('click', function() {
+        if(chatId){
+            document.querySelector('.pop-up-background-files').classList.remove('hidden');
+            document.querySelector('.file-audio-form').classList.remove('hidden');
+        }
+        else{
+            alert("Пожалуйста, выберите чат");
+        }
+    });
+    $('.open-file-video').on('click', function() {
+        if(chatId){
+            document.querySelector('.pop-up-background-files').classList.remove('hidden');
+            document.querySelector('.file-video-form').classList.remove('hidden');
+        }
+        else{
+            alert("Пожалуйста, выберите чат");
+        }
+    });
+    $('.open-file-image').on('click', function() {
+        if(chatId){
+            document.querySelector('.pop-up-background-files').classList.remove('hidden');
+            document.querySelector('.file-image-form').classList.remove('hidden');
+        }
+        else{
+            alert("Пожалуйста, выберите чат");
+        }
+    });
 
     loadlastMessage();
 
@@ -346,6 +377,9 @@
                 success: function(data) {
                     $('.last-message-{{ Chat.id }}').empty();
                     var message = data[data.length-1];
+                    if (!message || !message.type) {
+                        return; // Skip this iteration if the message format is invalid
+                    }
                     if (message.type == "message"){
                         $('.last-message-{{ Chat.id }}').append('<p><strong>' + message.sender + ':</strong> ' + message.content + '</p></>');
                     }
@@ -386,7 +420,7 @@
                 contentType: 'application/json',
                 success: function() {
                     $('#message-input').val('');
-                    loadMessages();
+                    startLongPolling();
                     loadlastMessage();
                 }
             });
@@ -395,65 +429,58 @@
         }
     });
 
-    function startLongPolling() {
-        if (chatId) {
-            $.ajax({
-                url: '/get_messages/' + chatId + '/',
-                method: 'GET',
-                success: function(data) {
-                    $('.scrollable-list-messages').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        var message = data[i];
-                        if (message.type == "message"){
-                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
-                            if ("{{user}}" == message.sender){
-                                $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
-                            } 
-                            // Остальные пользователи-отправители сообщений
-                            else {
-                                $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.content + ' <em>' + message.creation_date + '</em></p></li>');
-                            }
-                        }
-                        else if (message.type == "file"){
-                            // Условие-определение того, что отправитель сообщения - это текущий пользователь
-                            if ( message.image ){
-                                if ("{{user}}" == message.sender){
-                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                                // Остальные пользователи-отправители сообщений
-                                else {
-                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<img src="' + message.image + '" style="max-height:200px;"> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                            }
-                            else if ( message.video ){
-                                if ("{{user}}" == message.sender){
-                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                                // Остальные пользователи-отправители сообщений
-                                else {
-                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video><em>' + message.creation_date + '</em></p></li>');
-                                }
-                            }
-                            else if ( message.audio ){
-                                if ("{{user}}" == message.sender){
-                                    $('.scrollable-list-messages').append('<li class="message-container" style="background-color: red;"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio> <em>' + message.creation_date + '</em></p></li>');
-                                }
-                                // Остальные пользователи-отправители сообщений
-                                else {
-                                    $('.scrollable-list-messages').append('<li class="message-container"><p><strong>' + message.sender + ':</strong> ' + message.title + '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio><em>' + message.creation_date + '</em></p></li>');
-                                }
-                            }
-                        }     
+function startLongPolling() {
+    if (chatId) {
+        $.ajax({
+            url: '/get_messages/' + chatId + '/',
+            method: 'GET',
+            success: function(data) {
+                $('.scrollable-list-messages').empty();
+                for (var i = 0; i < data.length; i++) {
+                    var message = data[i];
+                    var messageHtml = '';
+                    if (!message || !message.type) {
+                        console.error("Invalid message format:", message);
+                        return; // Skip this iteration if the message format is invalid
                     }
-                    messageObserver.notify(data);
-                    // закоментил потому что эта функция вызывает сама себя и начинает сильно лог-лист вверх поднимать (ПОТОМ НУЖНО БУДЕТ РАСКОМЕНТИТЬ!!!)  startLongPolling();
-                },
-                error: function() {
-                    setTimeout(startLongPolling, 5000);
+
+                    if (message.type == "message"){
+                        messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
+                        messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.content + '</p>';
+                        messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
+                        messageHtml += '</li>';
+                    }
+                    else if (message.type == "file"){
+                        messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
+                        messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.title + '</p>';
+
+                        if (message.image) {
+                            messageHtml += '<img src="' + message.image + '" style="max-height:200px;">';
+                        }
+                        else if (message.video) {
+                            messageHtml += '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video>';
+                        }
+                        else if (message.audio) {
+                            messageHtml += '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio>';
+                        }
+
+                        messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
+                        messageHtml += '</li>';
+                    }
+
+                    $('.scrollable-list-messages').append(messageHtml);
                 }
-            });
-        }
+                messageObserver.notify(data);
+                // startLongPolling();
+            },
+            error: function() {
+                setTimeout(startLongPolling, 5000);
+            }
+        });
     }
+}
+
+
 
     function MessageObserver() {
         this.subscribers = [];
@@ -473,8 +500,9 @@
         console.log("Messages updated:", data);
     });
 
-    // Как раскоментишь то что находиться в функции удали сет интервал
     setInterval(startLongPolling, 5000);
+
+    
 });
 </script>
 
