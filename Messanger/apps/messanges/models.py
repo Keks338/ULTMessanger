@@ -17,8 +17,8 @@ class MessageText(models.Model):
     Group_chat_id = models.ForeignKey(GroupChat, null=True, blank=True, on_delete=models.CASCADE)
     Text = models.TextField(max_length=500, blank=True)
     Sender = models.ForeignKey(CustomUser, related_name='sent_messages', null=True, blank=True, on_delete=models.CASCADE)
-    Message_Creation_Date = models.DateField(auto_now_add=True)
-    Message_Edit_Date = models.DateField(auto_now=True)
+    Message_Creation_Date = models.DateTimeField(auto_now_add=True)
+    Message_Edit_Date = models.DateTimeField(auto_now=True)
 
 class MediaFile(models.Model):
     title = models.CharField(max_length=100)
@@ -28,4 +28,4 @@ class MediaFile(models.Model):
     Sender_id = models.ForeignKey(CustomUser, related_name='message_sender', null=True, blank=True, on_delete=models.CASCADE)
     Chat_id = models.ForeignKey(Chat, null=True, blank=True, on_delete=models.CASCADE)
     Group_chat_id = models.ForeignKey(GroupChat, null=True, blank=True, on_delete=models.CASCADE)
-    File_Creation_Date = models.DateField(auto_now_add=True)
+    File_Creation_Date = models.DateTimeField(auto_now_add=True)
