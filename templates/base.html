@@ -22,12 +22,10 @@
             <p>{% now "SHORT_DATETIME_FORMAT" %}</p>
         </div>
         <div class="flex-none" style="color: white;">
-            <ul class="menu menu-horizontal px-1">           
-                <li><a href="{% url "messanges:homePage" %}">Главная страница</a></li>
-                <li><a href="#" class="add-chat">Мои друзья</a></li>
-                {% if not user.is_authenticated %}
-                <li><a href="{% url "users:loginPage" %}">Вход</a></li>
-                <li><a href="{% url "users:signUp" %}">Регистрация</a></li>
+            <ul class="menu menu-horizontal px-1">   
+                {% if user.is_authenticated %}        
+                  <li><a href="{% url "messanges:homePage" %}">Главная страница</a></li>
+                  <li><a href="#" class="add-chat">Мои друзья</a></li>
                 {% endif %}
             </ul>
           {% if user.is_authenticated %}

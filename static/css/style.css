@@ -18,6 +18,15 @@ html, body {
     height: 66vh;
     animation: fadeIn 0.5s ease-in-out;
 }
+.pop-up-card-login {
+    position: fixed;
+    left: 40%;
+    top: 35%;
+    background-color: aliceblue;
+    width: 20vw;
+    height: 30vh;
+    animation: fadeIn 0.5s ease-in-out;
+}
 
 @keyframes fadeIn {
     from { opacity: 0; }

@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}KoKaXaБо{% endblock %}
 {% block content %}
-
+{% if user.is_authenticated %}
 <div class="pt-16 w-full">
     <div class="w-screen">
         <div class="grid grid-cols-3 border-b border-gray-700 bg-gray-800">
@@ -64,7 +64,7 @@
                                             <img class="h-12 w-12 flex-none rounded-full bg-black" src="{{ User.image.url }}" alt="Logo">
                                             {% endif %}
                                           <div class="min-w-0 flex-auto">
-                                            <p class="text-sm font-semibold leading-6 text-white-100" style="color: #fff;">{{ User.username }}</p>
+                                            <a href="{% url 'users:profile' user_id=User.id %}" class="text-sm font-semibold leading-6 text-white-100" style="color: #fff;">{{ User.username }}</a>
                                             <p class="mt-1 truncate text-xs leading-5 text-gray-500 last-message-{{ Chat.id }}">
 
                                             </p>
@@ -103,7 +103,7 @@
                                 </a>
                                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 rounded-br-none">
                                   <li><a style="color: #fff;" class="open-file-video">Видео</a></li>
-                                  <li><a style="color: #fff;" class="open-file-image">Фотография</a></li>
+                                  <li><a style="color: #fff;" class="open-file-image">Изображение</a></li>
                                   <li><a style="color: #fff;" class="open-file-audio">Аудио</a></li>
                                 </ul>
                               </div>
@@ -138,14 +138,6 @@
                         </div>
                         <p style="color:rgb(120, 120, 120);">Это вы!</p>
                         <p></p>
-                        {% if user.id == User.id %}
-                            <p></p>
-                            {% for chat in Chats %}
-                                {% if chat.User1.id == user.id and chat.User2.id == user.id %}
-                                    <a class="btn btn-primary">Открыть чат</a>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
                     </div>
                     </li>
                 {% endif %}
@@ -173,46 +165,18 @@
                             </div>
                             <p></p>
                             <p></p>
+                            <p></p>
                             {% if user.id in User.friend_list_id %}
-                            {% if chat_exists %}
-                            {% for chat in Chats %}
-                                {% if chat.User1.id == user.id %}
-                                    {% if chat.User2.id == User.id %}
-                                    <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
-                                    {% endif %}
-                                {% elif chat.User2.id == user.id %}
-                                    {% if chat.User1.id == User.id %}
-                                    <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
-                                    {% endif %}
-                                    {% else %}
-                                    <p></p>
-                                {% endif %}
-                            {% endfor %}
-                            {% endif %}
                             {% if User.id not in massa %}
                             <p></p>
                             {% endif %}
                                 <a class="btn btn-error remove-friend-p" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% elif User.id in user.friend_list_id %}
-                                {% if chat_exists %}
-                                {% for chat in Chats %}
-                                    {% if chat.User1.id == user.id %}
-                                        {% if chat.User2.id == User.id %}
-                                        <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
-                                        {% endif %}
-                                    {% elif chat.User2.id == user.id %}
-                                        {% if chat.User1.id == User.id %}
-                                        <a class="btn btn-primary" data-user-id="{{ User.id }}" style="margin-right: 5px;">Открыть чат</a>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}                                                                    
-                                {% endif %}
                                     {% if User.id not in massa %}
                                     <p></p>
                                     {% endif %}
                                     <a class="btn btn-error remove-friend" data-user-id="{{ User.id }}">Удалить из друзей</a>
                             {% else %}
-                                <p></p>
                                 <a class="btn btn-success add-friend" data-user-id="{{ User.id }}">Добавить в друзья</a>
                             {% endif %}
                         </div>
@@ -299,7 +263,7 @@
                                 </label>
                             </center>
                             <div>
-                                <h4>{{ User.username | truncatechars:10 }}</h4>
+                                <a href="{% url 'users:profile' user_id=User.id %}"><h4>{{ User.username | truncatechars:10 }}</h4></a>
                                 <p style="color: rgb(167, 167, 167);">{{ User.short_Desc | truncatechars:10 }}</p>
                             </div>
                             <p></p>
@@ -335,6 +299,7 @@
     $(document).ready(function() {
     var chatId = null;
     var messageObserver = new MessageObserver();
+    var previousMessages = [];
     const openFileAudio = document.querySelector('.open-file-audio');
     const openFileVideo = document.querySelector('.open-file-video');
     const openFileImage = document.querySelector('.open-file-image');
@@ -429,48 +394,48 @@
         }
     });
 
-function startLongPolling() {
+    function startLongPolling() {
     if (chatId) {
         $.ajax({
             url: '/get_messages/' + chatId + '/',
             method: 'GET',
             success: function(data) {
-                $('.scrollable-list-messages').empty();
-                for (var i = 0; i < data.length; i++) {
-                    var message = data[i];
-                    var messageHtml = '';
-                    if (!message || !message.type) {
-                        console.error("Invalid message format:", message);
-                        return; // Skip this iteration if the message format is invalid
-                    }
-
-                    if (message.type == "message"){
-                        messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
-                        messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.content + '</p>';
-                        messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
-                        messageHtml += '</li>';
-                    }
-                    else if (message.type == "file"){
-                        messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
-                        messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.title + '</p>';
-
-                        if (message.image) {
-                            messageHtml += '<img src="' + message.image + '" style="max-height:200px;">';
-                        }
-                        else if (message.video) {
-                            messageHtml += '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video>';
-                        }
-                        else if (message.audio) {
-                            messageHtml += '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio>';
+                if (!arraysEqual(previousMessages, data)) {
+                    $('.scrollable-list-messages').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        var message = data[i];
+                        var messageHtml = '';
+                        if (!message || !message.type) {
+                            console.error("Invalid message format:", message);
+                            continue; // Skip this iteration if the message format is invalid
                         }
 
-                        messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
-                        messageHtml += '</li>';
-                    }
+                        if (message.type == "message") {
+                            messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
+                            messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.content + '</p>';
+                            messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
+                            messageHtml += '</li>';
+                        } else if (message.type == "file") {
+                            messageHtml += '<li class="message-container ' + ("{{user}}" == message.sender ? 'sender' : 'receiver') + '">';
+                            messageHtml += '<p><strong>' + message.sender + ':</strong> ' + message.title + '</p>';
 
-                    $('.scrollable-list-messages').append(messageHtml);
+                            if (message.image) {
+                                messageHtml += '<img src="' + message.image + '" style="max-height:200px;">';
+                            } else if (message.video) {
+                                messageHtml += '<video width="320" height="240" controls><source src="' + message.video + '" type="video/mp4"></video>';
+                            } else if (message.audio) {
+                                messageHtml += '<audio controls><source src="' + message.audio + '" type="audio/mpeg"></audio>';
+                            }
+
+                            messageHtml += '<span class="message-timestamp">' + message.creation_date + '</span>';
+                            messageHtml += '</li>';
+                        }
+
+                        $('.scrollable-list-messages').append(messageHtml);
+                    }
+                    previousMessages = data;
+                    messageObserver.notify(data);
                 }
-                messageObserver.notify(data);
                 // startLongPolling();
             },
             error: function() {
@@ -478,6 +443,28 @@ function startLongPolling() {
             }
         });
     }
+}
+
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (var i = 0; i < arr1.length; i++) {
+        if (!objectsEqual(arr1[i], arr2[i])) return false;
+    }
+    return true;
+}
+
+function objectsEqual(obj1, obj2) {
+    var obj1Props = Object.getOwnPropertyNames(obj1);
+    var obj2Props = Object.getOwnPropertyNames(obj2);
+
+    if (obj1Props.length !== obj2Props.length) return false;
+
+    for (var i = 0; i < obj1Props.length; i++) {
+        var propName = obj1Props[i];
+        if (obj1[propName] !== obj2[propName]) return false;
+    }
+
+    return true;
 }
 
 
@@ -505,5 +492,20 @@ function startLongPolling() {
     
 });
 </script>
+{% else %}
+<div class="pop-up-background-files fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div class="pop-up-card-login" style="padding-top: 1%;"> <!-- Модальное окно "Для не зарегистрированного пользователя" -->
+        <center style="margin-bottom: 5%;">
+            <h2 style="display: inline-block;">!!ТРЕБУЕТСЯ ВХОД!!</h2>
+        </center>
+        <center>
+            <a href="{% url "users:loginPage" %}" class="btn btn-primary" style="width: 50%; margin-bottom: 10%;">ВХОД</a>
+        </center>
+        <center>
+            <a href="{% url "users:signUp" %}" class="btn btn-primary" style="width: 50%;">РЕГИСТРАЦИЯ</a>
+        </center>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}
